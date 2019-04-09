@@ -6,7 +6,21 @@
 
 void MainWindow::toogleBinaryButton(){
     QPushButton* ptrBtn = dynamic_cast<QPushButton*>(sender());
-    ptrBtn->setText(QString::number((ptrBtn->text().toInt()+3)%2));
+    //ptrBtn->setText(QString::number((ptrBtn->text().toInt()+3)%2));
+    int idx_x,idx_y;
+    for(int i = 0; i < MAXNONODES; ++i){
+        for(int j = 0; j < MAXNONODES; ++j){
+            if(nodesMatrix[i][j] == ptrBtn){
+                idx_x = i;
+                idx_y = j;
+                break;
+            }
+        }
+    }
+    if(idx_x!= idx_y){
+        nodesMatrix[idx_x][idx_y]->setText(QString::number((nodesMatrix[idx_x][idx_y]->text().toInt()+3)%2));
+        nodesMatrix[idx_y][idx_x]->setText(QString::number((nodesMatrix[idx_y][idx_x]->text().toInt()+3)%2));
+    }
 }
 
 
