@@ -104,13 +104,27 @@ Dokładne działanie algorytmu \textit{ILIGRA} opisuje pseudokod z~rysunku \ref{
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{algo.png}
-	\caption{Pseudokod algorytmu \textit{ILIGRA}}
+	\caption{Pseudokod algorytmu \textit{ILIGRA}.}
 	\label{fig:algo}
 \end{figure}
 
 Prace rozpoczyna się od zainicjalizowania pustego grafu $G$, zbiorów $\mathcal{N}$ oraz $\mathcal{N}_w$ zawierających wierzchołki $H$ i~pustego zbioru $\mathcal{N}_h$. Ze zbioru wszystkich wierzchołków $\mathcal{N}_w$ (odpowiadających krawędziom, których wierzchołki incydentne nie zostały jeszcze znalezione), wybrany zostaje jeden, dowolny wierzchołek $n_1$ i jeden dowolny jego wierzchołek sąsiadujący w~$H$. Następnie dodane do $G$ zostają dwa wierzchołki $v_1$ i~$v_2$ oraz krawędź między nimi. Odpowiada to zależnościom reprezentowanym w~$H$ przez $n_1$, w~związku z~czym ze zbioru $\mathcal{N}_w$ usunięty zostaje $n_1$. Arbitralnie ustala się, że $v_1$ jest incydentny do $l_{n_2}$, co powoduje przeniesienie $n_2$ z~$\mathcal{N}_w$ do $\mathcal{N}_h$.
 
 Jeśli wierzchołek sąsiaduje w~$H$ z~$n_1$, to musi on być incydentny do $v_1$ lub $v_2$. Więc jest w~sąsiedztwie $\mathcal{N}_b(n_1)$, a~nie w~$\mathcal{N}_b(n_2)$, nie może być incydentny do $v_1$, więc jest do $v_2$. Wszystkim krawędziom ze zbioru $\mathcal{L}_b(l_{n_1})\ \mathcal{L}_b(l_{n_2})$ przypisany zostaje wierzchołek $v_2$. Ponadto wierzchołki $\mathcal{N}_b(n_1)\ \mathcal{N}_b(n_2)$ przeniesione zostają z~$\mathcal{N}_w$ do $\mathcal{N}_h$.
+
+Tworzony jest zbiór $J$, który zawiera wspólnych sąsiadów $n_1$ i~$n_2$. Następuje sprawdzenie które z~trzech twierdzeń należy wykorzystać. Najpierw sprawdzane jest czy $J$ ma jeden lub dwa wierzchołki. Jeśli w~takim przypadku istnieje $n_u$, które dzieli wszystkich sąsiadów z~$n_1$ lub $n_2$ oraz posiada ponad dwóch sąsiadów innych niż $n_1$ lub $n_2$, $l_{n_u}$ zgodnie z~twierdzeniem nr 3 uznaje się za incydentny do $v_2$ oraz następuja wszystkie czynności związane z~formalnym dowiązaniem krawędzi. Usuwa się $n_u$ z~$J$. Jeśli nie występuje taki wierzchołek, algorytm rozpoczyna obsługa sytuacji wyjątkowych, opisana na rysunku \ref{fig:specCases}. Natomiast w~przypadku gdy $J$ zawiera więcej niż trzy wierzchołki i~istnieje $n_u$, które nie sąsiaduje z~żadnym innym wierzchołkiem z~$J$ postępuje się z~nim tak samo jak w~przypadku spełnienia poprzedniego warunku.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{specCases.png}
+	\caption{Rozwiązania dla wypadków specjalnych.}
+	\label{fig:specCases}
+\end{figure}
+
+Po usunięciu $n_u$ pozostałe wierzchołki powinny reprezentować krawędzie incydentne do $v_1$, ale nie usuwa się ich z~$J$. Jeśli $J$ nie jest puste, albo nie tworzy kliki to oznacza, że graf nie jest liniowy i~kończy prace algorytmu. Tak amo dzieje się jeśli zbiór sąsiadów $n_1$ bez tych znajdujących się w~$J$ jest nie pusty i nie tworzy kliki. 
+
+Na koniec algorytm wchodzi do pętli, która trwa dopóki zbiór $\mathcal{N}_h$ nie jest pusty. W~niej wybierany jest dowolny wierzchołek, który jest usuwany z~$\mathcal{N}_h$. Do $G$ dodawany jest nowy wierzchołek $v$ oraz krawędź łącząca go z~pierwszym wierzchołkiem podłączonym do krawędzi reprezentowanej przez $n$. Tworzony jest pusty zbiór $C$. Rozpoczyna się pętla iterowana po wszystkich sąsiadach $n$. Jeśli taki sąsiad ($n_r$) należy do $\mathcal{N}_h$ oraz jego znany wierzchołek w~$G$ ($v_{l_{n_r}}$) nie jest tym samym co ten, do którego na początku iteracji pętli $while$, połączona była krawędź $l_{n}$ - $v_{l_{n}}$, takiego sąsiada dodaje się do zbioru $C$, usuwa z~$\mathcal{N}_h$, a~do $G$ dodaje się nowy wierzchołek połączony z~$v_{l_{n_r}}$. Jeśli poprzedni warunek nie został spełniony, a~$n_r$ należy do $\mathcal{N}_w$, takiego sąsiada usuwa się ze zbioru wierzchołków bez jakiegokolwiek znalezionego wierzchołka inydentnego w~$G$, dodaje do $\mathcal{N}_h$ i $C$ oraz nowy wierzchołek $v$, dodany w~tej iteracji nadrzędnej pętli, uznaje się za incydentny do $l_{n_r}$. Na koniec iteracji pętli $while$ jeśli zbiór $C$ nie jest pusty i~nie tworzy kliki graf $H$ nie jest liniowy, a~program przerywa pracę.
+
+
 
 
 \bibliography{bibliografia} 
