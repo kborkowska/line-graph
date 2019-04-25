@@ -1,0 +1,118 @@
+% !TeX encoding = UTF-8
+% !TeX spellcheck = pl_PL
+\documentclass{article}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage[]{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{geometry}
+ 
+\usepackage{listings}
+\usepackage{color, colortbl}
+\usepackage{hyperref}
+
+\usepackage{multirow}
+\usepackage{pdfpages}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{black},
+	keywordstyle=\color{blue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	%numbers=left,                    
+	%numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+\date{}
+
+\author{Karolina Borkowska \\ Maciej Kłos}
+
+\title{Odtwarzanie grafu z~jego grafu krawędziowego\\
+		{\large Sprawozdanie nr 2}}
+\begin{document}
+	\maketitle
+%	\begin{figure}[h]
+%		\centering
+%		\includegraphics[width=1\textwidth]{images/wybor_cech.png}
+%		\caption{Wykres wartości cech 2 i 4.}
+%		\label{24}	
+%	\end{figure}
+
+Projekt ma na celu jest zaprojektowanie programu, który w~graficzny sposób będzie demonstrował
+działanie wybranego algorytmu odtwarzania grafu z~jego grafu krawędziowego.
+
+\section{Algorytm}
+
+Wybrano algorytm \textbf{\textit{ILIGRA}}\cite{algo} - \textit{Inverse LIne GRaph Algorithm}. Charakteryzuje się on niską złożonością obliczeniową, a~dla szczególnych przypadków (grafy rzadkie oraz małe grafy gęste) rekonstrukcja trwa krócej niż gdyby wykonywana była przy użyciu innych algorytmów. \textit{ILIGRA} sprawdza czy podany graf jest grafem krawędziowym w trakcie działania. Notacja zastosowana do opisu algorytmu (tabela \ref{notacja}) jest zgodna z~użytą przez jego twórców. 
+
+\begin{table}[H]
+	\caption{Notacja użyta do opisu algorytmu \textit{ILIGRA}.}
+	\label{notacja}
+	\hline
+	\hline
+	\vspace{2.5mm}
+	\begin{tabular}{r l}
+		$G(N,L)$&oryginalny graf o $N$ wierzchołkach i~$L$ krawędziach\\
+		$H(N_H,L_H)$&graf krawędziowy grafu $G$ o $N_H$ wierzchołkach i~$L_H$ krawędziach\\
+		$n$&wierzchołek $n$ w grafie $H$\\
+		$\mathcal{N}$&zbiór wierzchołków grafu $H$\\
+		$\mathcal{N}_w$&zbiór wierzchołków grafu $H$, odpowiadający krawędziom \\&w $G$, których wierzchołki incydentne nie zostały jeszcze znalezione\\
+		$\mathcal{N}_h$&zbiór wierzchołków grafu $H$, odpowiadający krawędziom \\&w $G$, których jeden wierzchołek incydentny został znaleziony\\
+		$\mathcal{N}_b(n)$&zbiór wierzchołków sąsiadujących z~$n$ w~$H$\\
+		$l_n$&krawędź w~$G$ odpowiadająca węzłowi $n$ w~$H$\\
+		$\mathcal{L}_b(l_n)$&zbiór krawędzi w~$G$, odpowiadający wierzchołkom w~$\mathcal{N}_b(n)$\\
+		$V_{l_n}$&pierwszy zidentyfikowany wierzchołek incydentalny krawędzi $l_n$ w~$G$\\
+		ADDNODE($G,v$)& funkcja dodająca wierzchołek $v$ do $G$\\
+		ADDLINK($G,v_1,v_2$)&funkcja dodająca krawędź łączącą $v_1$ i~$v_2$ do $G$\\
+	\end{tabular} 
+ 	\hline
+\end{table}
+
+Podstawa teoretyczną dla tego algorytmu są trzy twierdzenia. 
+\begin{enumerate}
+	\item Załóżmy, że dwa sąsiadujące ze sobą wierzchołki grafu $H$ - $n_1$ i~$n_2$, odpowiadają krawędziom $l_{n_1}$ oraz $l_{n_2}$ w~grafie $G$, gdzie $l_{n_1}$ jest incydentna do $v_1$ i~$v_2$, a~$v_1$ jest dodatkowo incydentny do $l_{n_2}$. W~takim przypadku dla każdego $n\in \mathcal{N}_b(n_1)\ \mathcal{N}_b(n_2)$ w~$H$, odpowiadający mu $l_n$ w~$G$ musi być incydentny do $v_2$, a~wierzchołki w~$\mathcal{N}_b(n_1)\ \mathcal{N}_b(n_2)$ muszą tworzyć klikę w~$H$.
+	\item Załóżmy, że dwa sąsiadujące ze sobą wierzchołki grafu $H$ - $n_1$ i~$n_2$, odpowiadają krawędziom $l_{n_1}$ oraz $l_{n_2}$ w~grafie $G$, gdzie $l_{n_1}$ jest incydentna do $v_1$ i~$v_2$, a~$l_{n_2}$ jest incydentna do $v_1$ i~$v_3$. Dodatkowo $|\mathcal{N}_b(n_1)\cap \mathcal{N}_b(n_2)|\geq 3$. Jeżeli istnieje $n_u \in \mathcal{N}_b(n_1)\cap \mathcal{N}_b(n_2)$, w taki sposób, że $n_u$ nie sąsiaduje z~żadnym innym wierzchołkiem w~$\mathcal{N}_b(n_1)\cap \mathcal{N}_b(n_2)$, wtedy krawędź $l_{n_u}$ musi być incydentna do $v_2$ i~$v_3$ w~$G$.
+	\item Załóżmy, że dwa sąsiadujące ze sobą wierzchołki grafu $H$ - $n_1$ i~$n_2$, odpowiadają krawędziom $l_{n_1}$ oraz $l_{n_2}$ w~grafie $G$, gdzie $l_{n_1}$ jest incydentna do $v_1$ i~$v_2$, a~$l_{n_2}$ jest incydentna do $v_1$ i~$v_3$. Jeśli $|\mathcal{N}_b(n_1)\cap \mathcal{N}_b(n_2)|\leq 2$, to dla każdego $n_u \in \mathcal{N}_b(n_1)\cap \mathcal{N}_b(n_2)$, takiego że $\mathcal{N}_b(n_u) \ {n_1,n_2}|\geq 3$ oraz $\mathcal{N}_b(n_u) \subseteq \mathcal{N}_b(n_1)\cup \mathcal{N}_b(n_2)$, krawędź $l_{n_u}$ musi być incydentna do zarówno $v_2$ i~$v_3$ w~$G$.
+	
+\end{enumerate}
+
+	Większość przypadków rozwiązywana jest za pomocą pierwszych dwóch twierdzeń, jednakże jeżeli zbiór wspólnych sąsiadów wierzchołków $n_1$ i~$n_2$ składa się z~mniej niż trzech wierzchołków oraz wierzchołek w tym zbiorze ma mniej niż trzech sąsiadów innych niż $n_1$ i~$n_2$, trzeba posiłkować się ostatnim twierdzeniem. W~algorytmie taka sytuacja oznaczona jest jako wyjątkowa.
+
+\subsection{Opis działania algorytmu}
+Dokładne działanie algorytmu \textit{ILIGRA} opisuje pseudokod z~rysunku \ref{fig:algo}.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{algo.png}
+	\caption{Pseudokod algorytmu \textit{ILIGRA}}
+	\label{fig:algo}
+\end{figure}
+
+Prace rozpoczyna się od zainicjalizowania pustego grafu $G$, zbiorów $\mathcal{N}$ oraz $\mathcal{N}_w$ zawierających wierzchołki $H$ i~pustego zbioru $\mathcal{N}_h$. Ze zbioru wszystkich wierzchołków $\mathcal{N}_w$ (odpowiadających krawędziom, których wierzchołki incydentne nie zostały jeszcze znalezione), wybrany zostaje jeden, dowolny wierzchołek $n_1$ i jeden dowolny jego wierzchołek sąsiadujący w~$H$. Następnie dodane do $G$ zostają dwa wierzchołki $v_1$ i~$v_2$ oraz krawędź między nimi. Odpowiada to zależnościom reprezentowanym w~$H$ przez $n_1$, w~związku z~czym ze zbioru $\mathcal{N}_w$ usunięty zostaje $n_1$. Arbitralnie ustala się, że $v_1$ jest incydentny do $l_{n_2}$, co powoduje przeniesienie $n_2$ z~$\mathcal{N}_w$ do $\mathcal{N}_h$.
+
+Jeśli wierzchołek sąsiaduje w~$H$ z~$n_1$, to musi on być incydentny do $v_1$ lub $v_2$. Więc jest w~sąsiedztwie $\mathcal{N}_b(n_1)$, a~nie w~$\mathcal{N}_b(n_2)$, nie może być incydentny do $v_1$, więc jest do $v_2$. Wszystkim krawędziom ze zbioru $\mathcal{L}_b(l_{n_1})\ \mathcal{L}_b(l_{n_2})$ przypisany zostaje wierzchołek $v_2$. Ponadto wierzchołki $\mathcal{N}_b(n_1)\ \mathcal{N}_b(n_2)$ przeniesione zostają z~$\mathcal{N}_w$ do $\mathcal{N}_h$.
+
+
+\bibliography{bibliografia} 
+\bibliographystyle{plain}
+\end{document}
+
+
