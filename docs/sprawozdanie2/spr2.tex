@@ -125,8 +125,42 @@ Po usunięciu $n_u$ pozostałe wierzchołki powinny reprezentować krawędzie in
 Na koniec algorytm wchodzi do pętli, która trwa dopóki zbiór $\mathcal{N}_h$ nie jest pusty. W~niej wybierany jest dowolny wierzchołek, który jest usuwany z~$\mathcal{N}_h$. Do $G$ dodawany jest nowy wierzchołek $v$ oraz krawędź łącząca go z~pierwszym wierzchołkiem podłączonym do krawędzi reprezentowanej przez $n$. Tworzony jest pusty zbiór $C$. Rozpoczyna się pętla iterowana po wszystkich sąsiadach $n$. Jeśli taki sąsiad ($n_r$) należy do $\mathcal{N}_h$ oraz jego znany wierzchołek w~$G$ ($v_{l_{n_r}}$) nie jest tym samym co ten, do którego na początku iteracji pętli $while$, połączona była krawędź $l_{n}$ - $v_{l_{n}}$, takiego sąsiada dodaje się do zbioru $C$, usuwa z~$\mathcal{N}_h$, a~do $G$ dodaje się nowy wierzchołek połączony z~$v_{l_{n_r}}$. Jeśli poprzedni warunek nie został spełniony, a~$n_r$ należy do $\mathcal{N}_w$, takiego sąsiada usuwa się ze zbioru wierzchołków bez jakiegokolwiek znalezionego wierzchołka inydentnego w~$G$, dodaje do $\mathcal{N}_h$ i $C$ oraz nowy wierzchołek $v$, dodany w~tej iteracji nadrzędnej pętli, uznaje się za incydentny do $l_{n_r}$. Na koniec iteracji pętli $while$ jeśli zbiór $C$ nie jest pusty i~nie tworzy kliki graf $H$ nie jest liniowy, a~program przerywa pracę.
 
 
+\section{Struktury danych}
 
+Podstawową strukturą danych wykorzystywaną w~programie będzie własnoręcznie napisana klasa reprezentująca graf. Będzie ona przechowywała dwa sposoby reprezentacji grafów: macierz sąsiedztwa i~listę sąsiedztwa. Zaimplementowane zostaną metody dodawania oraz usuwania zarówno wierzchołków jak i~krawędzi. Istotne będzie aby przy każdej aktualizacji grafu obie przechowywane reprezentacje pozostawały spójne i~ aktualne.
 
+Pozostałe struktury danych wykorzystane w programie będą dotyczyły wizualizacji, użyte zostaną komponenty z biblioteki Qt.
+
+\section{Projekty testów}
+
+\subsection{Testy algorytmu}
+
+Do przetestowania algorytmu wygenerowanych zostanie pewna liczba grafów i~ich grafów krawędziowych. Następnie po przeprowadzeniu zaimplementowanego algorytmu na grafach krawędziowych, sprawdzana będzie poprawność z grafami wejściowymi. Także trzeba będzie sprawdzać czy algorytm wykrywa zakazane indukowane grafy \ref{fig:forbidden}. Aby tego dokonać algorytm zostanie uruchomiony z~zestawem grafów zawierających przedstawione zakazane indukowane grafy, w~takim przypadku algorytm powinien o~tym poinformować.
+
+\subsection{Testy wizualizacji}
+
+Do przetestowania wizualizacji trudno będzie zaprojektować testy automatyczne. Kwestie takie jak czytelność, dokładność i zrozumiałość działania algorytmu przedstawione za pomocą projektowanej aplikacji testowane będą manualnie, to znaczy według doświadczenia projektujących aplikację i~innych ewentualnych testerów.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{forbidden.eps}
+	\caption{Zakazane grafy indukowane w grafie krawędziowym}
+	\label{fig:forbidden}
+\end{figure}
+
+\section{Założenia programu}
+
+\subsection{Dane wejściowe}
+
+Wejściowy graf krawędziowy będzie można wczytać za pomocą macierzy sąsiedztwa lub listy sąsiedztwa. Wczytywanie może odbywać się z pliku, lub interaktywnie z poziomu aplikacji. Zaimplementowana zostanie możliwość zapisania stworzonego grafu do pliku. 
+Wczytany graf będzie wizualizowany tak aby istniała możliwość zweryfikowania go przez użytkownika
+
+\subsection{Działanie algorytmu}
+
+Testy przedstawione w~poprzednim punkcie powinny zapewnić poprawność działania algorytmu.
+
+\subsection{Wizualizacja działania algorytmu}
+
+Program będzie musiał w sposób czytelny przedstawiać działanie zaimplementowanego algorytmu. Oznacza to że w każdym momencie powinno być dokładnie widoczne jaki krok jest obecnie wykonywany, którymi wierzchołkami i krawędziami manipulujemy, jaka jest postać grafu odtworzonego z~wczytanego grafu krawędziowego.
 \bibliography{bibliografia} 
 \bibliographystyle{plain}
 \end{document}
