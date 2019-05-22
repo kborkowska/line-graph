@@ -6,4 +6,7 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES +=  tst_classtest.cpp
+SOURCES +=  tst_classtest.cpp\
+            ../graph.cpp
+
+HEADERS += ../graph.h

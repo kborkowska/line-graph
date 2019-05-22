@@ -6,7 +6,7 @@
 #include <array>
 #include <memory>
 
-#define MAX_NODES 50
+#define MAX_NODES 5
 
 class Graph
 {
@@ -17,6 +17,13 @@ public:
     bool removeNode(int idx);
     void printAdjecencyList();
     std::vector<std::vector<int>> getAdjecencyList();
+    std::vector<int> getNodesIndexes();
+    int getNodeCount();
+    bool changeIndex(int oldIdx, int newIdx);
+    bool setSingleAdjecencyList(int nodeIdx, const std::vector<int> &adjecencyList);
+    std::vector<int> getSingleAdjecencyList(int nodeIdx);
+    bool addAdjecentToANode(int adjIdx, int nodeIdx);
+    bool removeAdjecentFromANode(int adjIdx, int nodeIdx);
 
 private:
     class Node

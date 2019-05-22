@@ -9,6 +9,7 @@ int Graph::addNode(){
     for(idx = 0; idx < MAX_NODES; ++idx){
         if(indexList_[idx] == false){
             nodes_.push_back(std::make_unique<Node>(idx));
+            indexList_[idx]=true;
             break;
         }
     }
@@ -58,6 +59,76 @@ void Graph::printAdjecencyList(){
         std::cout<<std::endl;
     }
     return;
+}
+
+std::vector<int> Graph::getNodesIndexes(){
+    std::vector<int> indexes;
+    for(auto& node: nodes_){
+        indexes.push_back(node->getIndex());
+    }
+    return indexes;
+}
+
+int Graph::getNodeCount(){
+    return nodes_.size();
+}
+
+bool Graph::changeIndex(int oldIdx, int newIdx){
+    bool result = false;
+    for(auto& node: nodes_){
+        if(node->getIndex()==oldIdx){
+            node->setIndex(newIdx);
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
+
+bool Graph::setSingleAdjecencyList(int nodeIdx, const std::vector<int> &adjecencyList){
+    bool result = false;
+    for(auto& node: nodes_){
+        if(node->getIndex()==nodeIdx){
+            node->setAdjecencyList(adjecencyList);
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
+
+std::vector<int> Graph::getSingleAdjecencyList(int nodeIdx){
+    std::vector<int> al;
+    for(auto& node: nodes_){
+        if(node->getIndex()==nodeIdx){
+            al = node->getAdjecencyList();
+        }
+    }
+    return al;
+}
+
+bool Graph::addAdjecentToANode(int adjIdx, int nodeIdx){
+    bool result = false;
+    for(auto& node: nodes_){
+        if(node->getIndex()==nodeIdx){
+            if(node->addAdjecent(adjIdx))
+                result = true;
+            break;
+        }
+    }
+    return result;
+}
+
+bool Graph::removeAdjecentFromANode(int adjIdx, int nodeIdx){
+    bool result = false;
+    for(auto& node: nodes_){
+        if(node->getIndex()==nodeIdx){
+            if(node->removeAdjecent(adjIdx))
+                result = true;
+            break;
+        }
+    }
+    return result;
 }
 
 // Node methods
