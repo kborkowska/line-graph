@@ -4,6 +4,7 @@
 #include <vector>
 #include <bitset>
 #include <array>
+#include <memory>
 
 #define MAX_NODES 50
 
@@ -15,7 +16,7 @@ public:
     int addNode(const std::vector<int> &adjList);
     bool removeNode(int idx);
     void printAdjecencyList();
-    std::array<std::array<int>> getAdjecencyList();
+    std::vector<std::vector<int>> getAdjecencyList();
 
 private:
     class Node
@@ -26,15 +27,15 @@ private:
         bool addAdjecent(int idx);
         bool setAdjecencyList(const std::vector<int> &adjecencyList);
         bool removeAdjecent(int idx);
-        std::vector<int> getAdjecenyList();
+        std::vector<int> getAdjecencyList();
         int getIndex();
-        bool setIndex(int idx);
+        int setIndex(int idx);
     private:
-        std::vector<int> adjecencyList_;
         int index_;
+        std::vector<int> adjecencyList_;
     };
 
-    std::vector<*Node> nodes_;
+    std::vector<std::unique_ptr<Node>> nodes_;
     std::bitset<MAX_NODES> indexList_;
 
 };
