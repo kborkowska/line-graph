@@ -43,6 +43,7 @@ public:
     bool addAdjecentToANode(int adjIdx, int nodeIdx);
     bool removeAdjecentFromANode(int adjIdx, int nodeIdx);
     Node* getNode(int idx);
+    bool connect(int adjIdx, int nodeIdx);
 
 private:
 

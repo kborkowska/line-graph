@@ -156,6 +156,12 @@ bool Graph::removeAdjecentFromANode(int adjIdx, int nodeIdx){
     return result;
 }
 
+bool Graph::connect(int adjIdx, int nodeIdx){
+    bool res1 = addAdjecentToANode(adjIdx, nodeIdx);
+    bool res2 = addAdjecentToANode(nodeIdx, adjIdx);
+    return res1 && res2;
+}
+
 // Node methods
 Graph::Node::Node(int index):index_(index){}
 
