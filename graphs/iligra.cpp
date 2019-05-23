@@ -5,21 +5,43 @@
 #include <QTextStream>
 
 Iligra::Iligra(){
-    state = NOT_READY;
+    step = NONE;
+    stepInfo = "Load a line graph";
 }
 
 
 bool Iligra::changeState(){
 
-    switch(state){
-          case NOT_READY: return false;
+    switch(step){
+          case NONE:          stepInfo = "Can't move to the next step!\n Load a line graph";
+                              return false;
+          case LOADED:        step = ARBITRARY_N1;
+                              stepInfo = "Chose one arbitrary node";
+                              choseArbitraryNode();
+                              return true;
+          case ARBITRARY_N1:  stepInfo = "Chose one of its neighboours";
+                              step = ARBITRARY_N2;
+                              choseArbitraryNeighbour();
+
+
     }
     return true;
 }
 
-bool Iligra::changeState(State newState){
-    state = newState;
+bool Iligra::changeStep(Step newStep){
+    step = newStep;
     return true;
+}
+
+int Iligra::choseArbitraryNode(){
+    highlighted.push_back(Nw[0]);
+    Nb = H.getSingleAdjecencyList(Nw[0]);
+    return Nw[0];
+}
+
+int Iligra::choseArbitraryNeighbour(){
+    highlighted.push_back(Nb[0]);
+    return Nb[0];
 }
 
 bool Iligra::loadFromFile(QString file){
@@ -72,7 +94,9 @@ bool Iligra::loadFromFile(QString file){
         H.addNode(idx, (*it1));
     }
 
-    changeState(READY);
+    Nw = H.getNodesIndexes();
+
+    changeStep(LOADED);
 
     return true;
 }

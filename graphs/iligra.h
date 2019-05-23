@@ -12,15 +12,25 @@ public:
     Graph H;
     Graph G;
 
+    std::vector<int> Nw;
+    std::vector<int> Nh;
+    std::vector<int> Nb;
+
+    std::vector<int> highlighted;
+
+    QString stepInfo;
+
     Iligra();
     bool changeState();
     bool loadFromFile(QString file);
 
-    enum State {NOT_READY, READY};
+    enum Step {NONE, LOADED, ARBITRARY_N1, ARBITRARY_N2};
 
 private:
-    State state;
-    bool changeState(State newState);
+    Step step;
+    bool changeStep(Step newStep);
+    int choseArbitraryNode();
+    int choseArbitraryNeighbour();
 };
 
 #endif // ILIGRA_H
