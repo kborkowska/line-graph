@@ -97,6 +97,23 @@ void MainWindow::changeNumberOfNodes(int i){
 void MainWindow::on_pushButton_101_clicked()
 {
     drawWindow = new DrawWindow();
+    Graph *graph = new Graph();
+    graph->addNode();
+    graph->addNode();
+    graph->addNode();
+    graph->addNode();
+    graph->addNode();
+    graph->connect(0, 1);
+    graph->connect(0, 2);
+    graph->connect(2, 3);
+    graph->connect(1, 2);
+    graph->connect(1, 3);
+    graph->connect(0, 4);
+    graph->connect(4, 3);
+
+    graph->repositionNodes();
+
+    drawWindow->addLineGraph(graph);
     drawWindow->show();
     drawWindow->update();
 }

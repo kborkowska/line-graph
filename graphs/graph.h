@@ -5,13 +5,21 @@
 #include <bitset>
 #include <array>
 #include <memory>
+#include <QPoint>
+#include <QLineF>
+#include <QRandomGenerator>
+#include "math.h"
 
 #define MAX_NODES 20
+#define K_CONSTANT 500
+#define C_CONSTANT 0.01
+#define MAX_X 400
+#define MAX_Y 300
+#define RADIUS 15
 
 class Graph
 {
 public:
-
     class Node
     {
     public:
@@ -23,9 +31,12 @@ public:
         std::vector<int> getAdjecencyList();
         int getIndex();
         int setIndex(int idx);
+        void setPosition(QPoint position);
+        QPoint getPosition();
     private:
         int index_;
         std::vector<int> adjecencyList_;
+        QPoint position_;
     };
 
     Graph();
@@ -44,6 +55,10 @@ public:
     bool removeAdjecentFromANode(int adjIdx, int nodeIdx);
     Node* getNode(int idx);
     bool connect(int adjIdx, int nodeIdx);
+
+    void setNodePosition(int idx, QPoint position);
+    QPoint getNodePosition(int idx);
+    void repositionNodes();
 
 private:
 

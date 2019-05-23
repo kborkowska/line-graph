@@ -17,10 +17,11 @@ public:
     explicit DrawWindow(QWidget *parent = nullptr);
     ~DrawWindow();
     void paintEvent(QPaintEvent *event);
+    void addLineGraph(Graph *lineGraph);
 
 private:
     Ui::DrawWindow *ui;
-    Graph *lineGraph;
+    Graph *lineGraph_ = nullptr;
 };
 
 #endif // DRAWWINDOW_H

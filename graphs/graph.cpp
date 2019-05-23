@@ -202,3 +202,73 @@ int Graph::Node::setIndex(int idx){
     index_ = idx;
     return idx;
 }
+
+void Graph::Node::setPosition(QPoint position) {
+    position_ = position;
+}
+
+QPoint Graph::Node::getPosition() {
+    return position_;
+}
+
+void Graph::setNodePosition(int idx, QPoint position) {
+    for(auto& node: nodes_){
+        if(node->getIndex() == idx){
+            node->setPosition(position);
+        }
+    }
+}
+
+QPoint Graph::getNodePosition(int idx) {
+    for(auto& node: nodes_){
+        if(node->getIndex() == idx){
+            return node->getPosition();
+        }
+    }
+}
+
+void Graph::repositionNodes() {
+    for(int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
+        QRandomGenerator gen(nodeIterator + 1);
+        int x = gen.bounded(0, MAX_X);
+        int y = gen.bounded(0, MAX_Y);
+        setNodePosition(nodeIterator, QPoint(x, y));
+    }
+
+    for (int i = 0; i < 100; i++) {
+        for (int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
+            qreal xForce = 0;
+            qreal yForce = 0;
+            QPoint nodePosition = getNodePosition(nodeIterator);
+
+            std::vector<int> adjacent = getSingleAdjecencyList(nodeIterator);
+            for (int destIterator = 0; destIterator < getNodeCount(); destIterator++) {
+                QPoint destPosition = getNodePosition(destIterator);
+                if (nodeIterator == destIterator) {
+                    continue;
+                }
+                std::cout << "Node: " << nodeIterator << ", Destination: " << destIterator << std::endl;
+                std::cout << "(" << nodePosition.x() << "," << nodePosition.y() << ")" << " "
+                          << "(" << destPosition.x() << "," << destPosition.y() << ")" << std::endl;
+                QLineF vec(nodePosition, destPosition);
+                qreal d = vec.length();
+                std::cout <<  vec.dx() << " " << vec.dy() << " " << d << std::endl;
+                if(std::find(adjacent.begin(), adjacent.end(), destIterator) != adjacent.end()) {
+                    qreal fa = (d*d) / K_CONSTANT;
+                    xForce += fa * vec.dx() / d;
+                    yForce += fa * vec.dy() / d;
+                    std::cout << "fa " << fa << std::endl;
+                }
+
+                qreal fr = (C_CONSTANT*K_CONSTANT*K_CONSTANT)/d;
+                xForce -= fr * vec.dx() / d;
+                yForce -= fr * vec.dy() / d;
+                std::cout << "fr " << fr << std::endl;
+            }
+            std::cout << (int)xForce << " " << (int)yForce << std::endl;
+            nodePosition.setX(qMin(qMax(nodePosition.x() + (int)(xForce), RADIUS), MAX_X - RADIUS));
+            nodePosition.setY(qMin(qMax(nodePosition.y() + (int)(yForce), RADIUS), MAX_Y - RADIUS));
+            setNodePosition(nodeIterator, nodePosition);
+        }
+    }
+}

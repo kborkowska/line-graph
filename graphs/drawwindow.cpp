@@ -12,3 +12,8 @@ DrawWindow::~DrawWindow() {
 void DrawWindow::paintEvent(QPaintEvent *event) {
     ui->lineGraphDrawArea->update();
 }
+
+void DrawWindow::addLineGraph(Graph *lineGraph) {
+    this->lineGraph_ = lineGraph;
+    this->ui->lineGraphDrawArea->setGraph(lineGraph);
+}
