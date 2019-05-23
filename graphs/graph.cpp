@@ -1,8 +1,10 @@
 #include "graph.h"
 
 #include <iostream>
+#include <cstddef>
 
-Graph::Graph(){}
+Graph::Graph(){
+}
 
 int Graph::addNode(){
     int idx;
@@ -24,6 +26,25 @@ int Graph::addNode(const std::vector<int> &adjecencyList){
             indexList_[idx]=true;
             break;
         }
+    }
+    return idx;
+}
+
+Graph::Node* Graph::getNode(int idx){
+    for(std::vector<std::unique_ptr<Node>>::iterator iter=nodes_.begin(); iter<nodes_.end(); ++iter){
+        if((*iter)->getIndex() == idx){
+            return iter->get();
+        }
+    }
+    return nullptr;
+}
+
+int Graph::addNode(int idx, const std::vector<int> &adjecencyList){
+    if(!indexList_[idx]){
+        nodes_.push_back(std::make_unique<Node>(idx,adjecencyList));
+        indexList_[idx]=true;
+    } else {
+        return addNode(adjecencyList);
     }
     return idx;
 }
@@ -75,11 +96,15 @@ int Graph::getNodeCount(){
 
 bool Graph::changeIndex(int oldIdx, int newIdx){
     bool result = false;
-    for(auto& node: nodes_){
-        if(node->getIndex()==oldIdx){
-            node->setIndex(newIdx);
-            result = true;
-            break;
+    if(!indexList_[newIdx]){
+        for(auto& node: nodes_){
+            if(node->getIndex()==oldIdx){
+                node->setIndex(newIdx);
+                indexList_[oldIdx] = false;
+                indexList_[newIdx] = true;
+                result = true;
+                break;
+            }
         }
     }
     return result;

@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    graph.cpp
+    graph.cpp \
+    iligra.cpp
 
 HEADERS += \
         mainwindow.h \
-    graph.h
+    graph.h \
+    iligra.h
 
 FORMS += \
         mainwindow.ui
