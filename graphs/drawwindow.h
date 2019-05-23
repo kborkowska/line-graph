@@ -18,10 +18,15 @@ public:
     ~DrawWindow();
     void paintEvent(QPaintEvent *event);
     void addLineGraph(Graph *lineGraph);
+    void setCurrentNode(int currentNode);
+
+private slots:
+    void on_nextStepButton_clicked();
 
 private:
     Ui::DrawWindow *ui;
     Graph *lineGraph_ = nullptr;
+    int currentNode = 0;
 };
 
 #endif // DRAWWINDOW_H
