@@ -24,25 +24,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    drawwindow.cpp \
-    graphdrawarea.cpp \
-    main.cpp \
-    mainwindow.cpp \
+        main.cpp \
+        mainwindow.cpp \
     graph.cpp \
     iligra.cpp
 
 HEADERS += \
-    drawwindow.h \
-    graphdrawarea.h \
-    mainwindow.h \
+        mainwindow.h \
     graph.h \
     iligra.h
 
-
 FORMS += \
-    drawwindow.ui \
-    graphdrawarea.ui \
-    mainwindow.ui
+        mainwindow.ui
 
 DISTFILES +=
 

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSpinBox>
+#include "drawwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,8 +22,12 @@ public slots:
     void toogleBinaryButton();
     void changeNumberOfNodes(int i);
 
+private slots:
+    void on_pushButton_101_clicked();
+
 private:
     Ui::MainWindow *ui;
+    DrawWindow *drawWindow;
 
     static const int MAXNONODES              = 10;
     static const int NODESMATRIXBTNS_XSTART  = 250;

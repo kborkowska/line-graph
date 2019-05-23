@@ -28,16 +28,13 @@ SOURCES += \
     graphdrawarea.cpp \
     main.cpp \
     mainwindow.cpp \
-    graph.cpp \
-    iligra.cpp
+    graph.cpp
 
 HEADERS += \
     drawwindow.h \
     graphdrawarea.h \
     mainwindow.h \
-    graph.h \
-    iligra.h
-
+    graph.h
 
 FORMS += \
     drawwindow.ui \
