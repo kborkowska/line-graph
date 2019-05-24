@@ -124,7 +124,7 @@ bool Iligra::changeState(){
 
 bool Iligra::checkIfIsNeighbour(int idx, int idxPot){
     std::vector<int> nbn = H.getSingleAdjecencyList(idx);
-    return std::find(nbn.begin(), nbn.end(), idxPot) != nbn.end()
+    return std::find(nbn.begin(), nbn.end(), idxPot) != nbn.end();
 }
 
 int Iligra::getnr(){
@@ -138,7 +138,7 @@ int Iligra::getnr(){
     return -1;
 }
 
-int Iligra::getZSieze(int idx){
+int Iligra::getZSize(int idx){
     std::vector<int> nbn = H.getSingleAdjecencyList(idx);
     std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
     std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
@@ -150,7 +150,7 @@ int Iligra::getZSieze(int idx){
             ++zSize;
         }
     }
-    return Zsize;
+    return zSize;
 }
 
 int Iligra::getNodeWithLessThanThreeZ(){
@@ -162,8 +162,8 @@ int Iligra::getNodeWithLessThanThreeZ(){
     //G -v1-v2
     // J (n1 n n2)
     for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
-        int Z = getZSieze(*it);
-        if(Z\<=2){
+        int Z = getZSize(*it);
+        if(Z<=2){
             return *it;
         }
     }
