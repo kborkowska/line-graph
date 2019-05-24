@@ -76,6 +76,7 @@ bool Graph::removeNode(int idx){
     for(std::vector<std::unique_ptr<Node>>::iterator iter=nodes_.begin(); iter<nodes_.end(); ++iter){
         if((*iter)->getIndex() == idx){
             nodes_.erase(iter);
+            indexList_[idx] = false;
             result = true;
             break;
         }

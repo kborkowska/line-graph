@@ -30,7 +30,7 @@ public:
 
     enum Step {NONE, LOADED, ARBITRARY_N1, ARBITRARY_N2, ADD_FIRST_NODES,
                CONNECT_N1, FIRST_CONECT_N2, N1_ONLY_NGBRS, ANALYSE_J, ONE_TWO_J,
-               THREE_J, NU, INIT_SPECIAL};
+               THREE_J, NU, INIT_SPECIAL, EACH_IN_J, SPECIAL};
 
 private:
     Step step;
@@ -44,6 +44,7 @@ private:
     int rightNExistInJ_oneTwo();
     int rightNExistInJ_three();
     void setNu(int nu);
+    int getNodeWithLessThanThreeZ();
 };
 
 #endif // ILIGRA_H

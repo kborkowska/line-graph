@@ -59,7 +59,7 @@ bool Iligra::changeState(){
                                 return true;
                                 }
           case ONE_TWO_J:       {int nu = rightNExistInJ_oneTwo();
-                                 if(nu){
+                                 if(nu>0){
                                     stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
                                                "Set nu as verticle of v2";
                                     step = NU;
@@ -72,7 +72,7 @@ bool Iligra::changeState(){
                                  return true;
                                 }
            case THREE_J:        {int nu = rightNExistInJ_three();
-                                 if(nu){
+                                 if(nu>0){
                                      stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
                                                 "Set nu as verticle of v2";
                                      setNu(nu);
@@ -81,11 +81,46 @@ bool Iligra::changeState(){
                                  }
                                  step = NU;
                                 }
+           case INIT_SPECIAL:   {int nu = getNodeWithLessThanThreeZ();
+                                 if(nu>0){
+                                     stepInfo = "Found nu for special cases: " + QString::number(nu);
+                                     step = SPECIAL;
+                                 } else {
+                                     stepInfo = "No proper candidate for special cases scenario";
+                                     step = EACH_IN_J;
+                                 }
+
+                                }
     }
     return true;
 }
 
-
+int Iligra::getNodeWithLessThanThreeZ(){
+    //Nw  = H.getNodesIndexes \ n1 n2 (n1\n2)
+    //Nh Nb[0] (n1\n2)
+    //Nb Nw[0].adjecencyList()
+    //vlh v1 (v2)
+    //highlighted = n1 n2 (n1\n2)
+    //G -v1-v2
+    // J (n1 n n2)
+    for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
+        std::vector<int> nbn = H.getSingleAdjecencyList(*it);
+        std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
+        std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
+        int Zsize = 0;
+        std::vector<int>::iterator in = nbn.begin();
+        for(; in < nbn.end(); ++in){
+            if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
+                std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
+                ++Zsize;
+            }
+            if(Zsize<=2){
+                return *it;
+            }
+        }
+    }
+    return -1;
+}
 
 
 void Iligra::setNu(int nu){
@@ -265,8 +300,15 @@ bool Iligra::loadFromFile(QString file){
         }
         adjecencyList.push_back(inner);
     }
-    for(std::vector<std::vector<int>>::iterator it1 = adjecencyList.begin();
+    /*for(std::vector<std::vector<int>>::iterator it1 = adjecencyList.begin();
         it1 < adjecencyList.end(); ++it1){
+
+
+        std::cout<<"##############"<<std::endl;
+        std::cout<<adjecencyList.size()<<std::endl;
+
+        std::cout<<"##############"<<std::endl;
+
         if((*it1)[0]>=MAX_NODES){
             adjecencyList.erase(it1--);
             continue;
@@ -280,20 +322,25 @@ bool Iligra::loadFromFile(QString file){
         if(it1 == adjecencyList.begin()){
             continue;
         }
-        std::vector<std::vector<int>>::iterator it2 = --it1;
+        std::vector<std::vector<int>>::iterator it2 = it1;
 
-        while((*it1)[0]<(*it2)[0] && it2>adjecencyList.begin()){
-            --it2;
+        while(true){
+            if((*it1)[0] == (*--it2)[0]){
+                adjecencyList.erase(it1--);
+                break;
+            } else if(!(*it1)[0]>(*(it2))[0]){
+                break;
+            }
+
         }
-
-        if((*it1)[0] == (*it2)[0]){
+        if((*it1)[0] < (*it2)[0]){
+            std::vector<int> temp = (*it1);
+            adjecencyList.insert(it2, temp);
             adjecencyList.erase(it1--);
-        } else if(++it2!=it1){
-            adjecencyList.insert(it2, *it1);
-            adjecencyList.erase(it1);
         }
 
-    }
+    }*/
+    std::cout<<"##############"<<std::endl;
     H.clear();
     for(std::vector<std::vector<int>>::iterator it1 = adjecencyList.begin();
         it1 < adjecencyList.end(); ++it1){
@@ -302,6 +349,8 @@ bool Iligra::loadFromFile(QString file){
         H.addNode(idx, (*it1));
     }
     Nw = H.getNodesIndexes();
+    std::cout<<"##############"<<std::endl;
+    std::cout<<H.getNodesIndexes()[2]<<std::endl;
     changeStep(LOADED);
     return true;
 }
