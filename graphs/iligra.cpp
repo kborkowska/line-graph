@@ -9,6 +9,7 @@ Iligra::Iligra(){
     step = NONE;
     stepInfo = "Load a line graph";
     std::cout<<stepInfo.toStdString()<<std::endl;
+    nu = -1;
 }
 
 
@@ -58,8 +59,8 @@ bool Iligra::changeState(){
                                 }
                                 return true;
                                 }
-          case ONE_TWO_J:       {int nu = rightNExistInJ_oneTwo();
-                                 if(nu>0){
+          case ONE_TWO_J:       {nu = rightNExistInJ_oneTwo();
+                                 if(nu>=0){
                                     stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
                                                "Set nu as verticle of v2";
                                     step = NU;
@@ -71,8 +72,8 @@ bool Iligra::changeState(){
                                  }
                                  return true;
                                 }
-           case THREE_J:        {int nu = rightNExistInJ_three();
-                                 if(nu>0){
+           case THREE_J:        {nu = rightNExistInJ_three();
+                                 if(nu>=0){
                                      stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
                                                 "Set nu as verticle of v2";
                                      setNu(nu);
@@ -81,18 +82,75 @@ bool Iligra::changeState(){
                                  }
                                  step = NU;
                                 }
-           case INIT_SPECIAL:   {int nu = getNodeWithLessThanThreeZ();
-                                 if(nu>0){
+           case INIT_SPECIAL:   {nu = getNodeWithLessThanThreeZ();
+                                 if(nu>=0){
                                      stepInfo = "Found nu for special cases: " + QString::number(nu);
                                      step = SPECIAL;
                                  } else {
                                      stepInfo = "No proper candidate for special cases scenario";
                                      step = EACH_IN_J;
                                  }
-
+                                }
+           case SPECIAL:        {int zSize = getZSize(nu);
+                                 if(zSize == 0){
+                                     stepInfo = "nu has no neighbours that are not n1 or n2."
+                                                " Again check size of J";
+                                     step = SPECIAL_ZERO_J;
+                                 } else if(zSize == 1){
+                                     stepInfo = "nu has one neighbour that is not n1 or n2."
+                                                " Again check size of J";
+                                     step = SPECIAL_ONE_J;
+                                 } else if(zSize == 2){
+                                     stepInfo = "nu has two neighbours that are not n1 or n2."
+                                                " Again check size of J";
+                                     step = SPECIAL_TWO_J;
+                                 }
+                                }
+           case SPECIAL_ZERO_J: {if(J.size()==1){
+                                    stepInfo = "J nas one member. Check number of verticles in G - L.";
+                                    step = SPECIAL_JONE_L;
+                                 } else if(J.size()==2 && checkIfIsNeighbour(nu, getnr())){
+                                    stepInfo = "J nas two members and nr is not a part of nu's neighbourhood. "
+                                               "Check number of verticles in G - L.";
+                                    step = SPECIAL_JTWO_L;
+                                 }else{
+                                    stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
+                                    step = EACH_IN_J;
+                                 }
                                 }
     }
     return true;
+}
+
+bool Iligra::checkIfIsNeighbour(int idx, int idxPot){
+    std::vector<int> nbn = H.getSingleAdjecencyList(idx);
+    return std::find(nbn.begin(), nbn.end(), idxPot) != nbn.end()
+}
+
+int Iligra::getnr(){
+    if(nu>-1){
+        for(int i=0; i<2;++i){
+            if(J[i] != nu){
+                return J[i];
+            }
+        }
+    }
+    return -1;
+}
+
+int Iligra::getZSieze(int idx){
+    std::vector<int> nbn = H.getSingleAdjecencyList(idx);
+    std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
+    std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
+    int zSize = 0;
+    std::vector<int>::iterator in = nbn.begin();
+    for(; in < nbn.end(); ++in){
+        if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
+            std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
+            ++zSize;
+        }
+    }
+    return Zsize;
 }
 
 int Iligra::getNodeWithLessThanThreeZ(){
@@ -104,19 +162,9 @@ int Iligra::getNodeWithLessThanThreeZ(){
     //G -v1-v2
     // J (n1 n n2)
     for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
-        std::vector<int> nbn = H.getSingleAdjecencyList(*it);
-        std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
-        std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
-        int Zsize = 0;
-        std::vector<int>::iterator in = nbn.begin();
-        for(; in < nbn.end(); ++in){
-            if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
-                std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
-                ++Zsize;
-            }
-            if(Zsize<=2){
-                return *it;
-            }
+        int Z = getZSieze(*it);
+        if(Z\<=2){
+            return *it;
         }
     }
     return -1;
@@ -201,7 +249,7 @@ void Iligra::n1OnlyNeighbours(){
             highlighted.push_back(*it);
             for(std::vector<int>::iterator itw = Nw.begin(); itw<Nw.end(); ++itw){
                 if(*itw == *it){
-                    Nw.erase(it);
+                    Nw.erase(itw);
                     break;
                 }
             }
