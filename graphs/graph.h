@@ -40,6 +40,7 @@ public:
         bool isHighlighted();
         void setHighlighted(bool highlighted);
 
+
         char alphaIndex;
     private:
         int index_;
@@ -54,9 +55,11 @@ public:
         Line();
         Line(int node1, int node2);
         int node1 = -1, node2 = -1;
+        int label1 = -1, label2 = -1;
         QString label_ = "";
         QString getLabel();
         void setLabel(QString label);
+        void setLabel(int label1, int label2) { this->label1 =  label1; this->label2 = label2;}
     };
 
     Graph();
@@ -87,12 +90,12 @@ public:
     int getLineCount() {return lines_.size();}
     std::vector<std::unique_ptr<Line>> lines_;
     bool alphabeticalIndexing = false;
+    QStringList colorList;
 private:
 
     std::vector<std::unique_ptr<Node>> nodes_;
 
     std::bitset<MAX_NODES> indexList_;
-    QStringList colorList;
 
 
 };

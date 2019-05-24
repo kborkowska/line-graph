@@ -342,7 +342,7 @@ void Iligra::connectN1(){
     //highlighted = Nw[0]
     //G v1-v2
     G.connect(0,1);
-    G.getLine(0, 1)->setLabel(QString::number(0) + QString::number(1));
+    G.getLine(0, 1)->setLabel(0, -1);
     Nw.erase(Nw.begin());
     return;
 }
