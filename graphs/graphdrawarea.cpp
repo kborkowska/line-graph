@@ -17,12 +17,15 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
     if (graph_ != nullptr) {
-        for(int nodeIterator = 0; nodeIterator < graph_->getNodeCount(); nodeIterator++) {
-            QPoint nodePosition = graph_->getNodePosition(nodeIterator);
-            std::vector<int> adjacent = graph_->getSingleAdjecencyList(nodeIterator);
-            for (int adj: adjacent) {
-                painter.drawLine(nodePosition, graph_->getNodePosition(adj));
-            }
+
+        for (int lineIterator = 0; lineIterator < graph_->getLineCount(); lineIterator++) {
+            painter.setPen(Qt::black);
+            Graph::Line *line = graph_->lines_[lineIterator].get();
+            painter.drawLine(graph_->getNodePosition(line->node1), graph_->getNodePosition(line->node2));
+            QLine qline(graph_->getNodePosition(line->node1), graph_->getNodePosition(line->node2));
+            painter.setPen(Qt::blue);
+            QPoint position = graph_->getNodePosition(line->node1) + QPoint(qline.dx()/2, qline.dy()/2);
+            painter.drawText(position, line->getLabel());
         }
 
         for(int nodeIterator = 0; nodeIterator < graph_->getNodeCount(); nodeIterator++) {

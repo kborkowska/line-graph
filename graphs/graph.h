@@ -47,7 +47,16 @@ public:
         QPoint position_;
         QString color_ = "white";
         bool highlighted_ = false;
+    };
 
+    class Line {
+    public:
+        Line();
+        Line(int node1, int node2);
+        int node1 = -1, node2 = -1;
+        QString label_ = "";
+        QString getLabel();
+        void setLabel(QString label);
     };
 
     Graph();
@@ -72,11 +81,16 @@ public:
     QPoint getNodePosition(int idx);
     void repositionNodes();
     void colorNodes();
-
+    void fillLines();
+    bool containsLine(int node1, int node2);
+    Line* getLine(int node1, int node2);
+    int getLineCount() {return lines_.size();}
+    std::vector<std::unique_ptr<Line>> lines_;
     bool alphabeticalIndexing = false;
 private:
 
     std::vector<std::unique_ptr<Node>> nodes_;
+
     std::bitset<MAX_NODES> indexList_;
     QStringList colorList;
 

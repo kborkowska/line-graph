@@ -191,6 +191,9 @@ bool Graph::removeAdjecentFromANode(int adjIdx, int nodeIdx){
 bool Graph::connect(int adjIdx, int nodeIdx){
     bool res1 = addAdjecentToANode(adjIdx, nodeIdx);
     bool res2 = addAdjecentToANode(nodeIdx, adjIdx);
+    if(!containsLine(adjIdx, nodeIdx)) {
+        lines_.push_back(std::make_unique<Graph::Line>(adjIdx, nodeIdx));
+    }
     return res1 && res2;
 }
 
@@ -295,25 +298,25 @@ void Graph::repositionNodes() {
                 if (nodeIterator == destIterator) {
                     continue;
                 }
-                std::cout << "Node: " << nodeIterator << ", Destination: " << destIterator << std::endl;
-                std::cout << "(" << nodePosition.x() << "," << nodePosition.y() << ")" << " "
-                          << "(" << destPosition.x() << "," << destPosition.y() << ")" << std::endl;
+                //std::cout << "Node: " << nodeIterator << ", Destination: " << destIterator << std::endl;
+                //std::cout << "(" << nodePosition.x() << "," << nodePosition.y() << ")" << " "
+                //          << "(" << destPosition.x() << "," << destPosition.y() << ")" << std::endl;
                 QLineF vec(nodePosition, destPosition);
                 qreal d = vec.length();
-                std::cout <<  vec.dx() << " " << vec.dy() << " " << d << std::endl;
+                //std::cout <<  vec.dx() << " " << vec.dy() << " " << d << std::endl;
                 if(std::find(adjacent.begin(), adjacent.end(), destIterator) != adjacent.end()) {
                     qreal fa = (d*d) / K_CONSTANT;
                     xForce += fa * vec.dx() / d;
                     yForce += fa * vec.dy() / d;
-                    std::cout << "fa " << fa << std::endl;
+                    //std::cout << "fa " << fa << std::endl;
                 }
 
                 qreal fr = (C_CONSTANT*K_CONSTANT*K_CONSTANT)/d;
                 xForce -= fr * vec.dx() / d;
                 yForce -= fr * vec.dy() / d;
-                std::cout << "fr " << fr << std::endl;
+                //std::cout << "fr " << fr << std::endl;
             }
-            std::cout << (int)xForce << " " << (int)yForce << std::endl;
+            //std::cout << (int)xForce << " " << (int)yForce << std::endl;
             nodePosition.setX(qMin(qMax(nodePosition.x() + (int)(xForce), RADIUS), MAX_X - RADIUS));
             nodePosition.setY(qMin(qMax(nodePosition.y() + (int)(yForce), RADIUS), MAX_Y - RADIUS));
             setNodePosition(nodeIterator, nodePosition);
@@ -325,4 +328,46 @@ void Graph::colorNodes() {
     for (int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
         getNode(nodeIterator)->setColor(colorList.at(nodeIterator));
     }
+}
+
+Graph::Line::Line(int node1, int node2) {
+    this->node1 = node1;
+    this->node2 = node2;
+}
+
+void Graph::fillLines() {
+    for (int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
+        std::vector<int> adjacentList = getSingleAdjecencyList(nodeIterator);
+        for (int adjacent: adjacentList) {
+            if (!containsLine(nodeIterator, adjacent)) {
+                lines_.push_back(std::make_unique<Graph::Line>(nodeIterator, adjacent));
+            }
+        }
+    }
+}
+
+bool Graph::containsLine (int node1, int node2) {
+    for(auto& line: lines_){
+        if((line->node1 == node1 && line->node2 == node2) || (line->node1 == node2 && line->node2 == node1)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Graph::Line* Graph::getLine (int node1, int node2) {
+    for(std::vector<std::unique_ptr<Graph::Line>>::iterator iter=lines_.begin(); iter<lines_.end(); ++iter){
+        if(((*iter)->node1 == node1 && (*iter)->node2 == node2) || ((*iter)->node1 == node2 && (*iter)->node2 == node1)){
+            return iter->get();
+        }
+    }
+    return nullptr;
+}
+
+QString Graph::Line::getLabel() {
+    return label_;
+}
+
+void Graph::Line::setLabel(QString label) {
+    label_ = label;
 }

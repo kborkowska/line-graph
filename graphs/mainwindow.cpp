@@ -103,26 +103,7 @@ void MainWindow::on_pushButton_101_clicked()
 {
     drawWindow = new DrawWindow();
     Iligra *iligra = new Iligra();
-    Graph *graph = &(iligra->H);
-    graph->addNode();
-    graph->addNode();
-    graph->addNode();
-    graph->addNode();
-    graph->addNode();
-    graph->connect(0, 1);
-    graph->connect(0, 2);
-    graph->connect(2, 3);
-    graph->connect(1, 2);
-    graph->connect(1, 3);
-    graph->connect(0, 4);
-    graph->connect(4, 3);
-
-
-
-    graph->getNode(0)->setHighlighted(true);
-    graph->repositionNodes();
     drawWindow->setIligra(iligra);
-    g.repositionNodes();
     drawWindow->show();
     drawWindow->update();
 }

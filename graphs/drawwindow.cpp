@@ -76,6 +76,7 @@ void DrawWindow::on_loadFromFileButton_clicked()
     setLineGraph(&(iligra_->H));
     setNodeGraph(&(iligra_->G));
     lineGraph_->repositionNodes();
+    lineGraph_->fillLines();
     std::cout<<92834283749847<<std::endl;
     updateDrawWindow();
     std::cout<<9<<std::endl;

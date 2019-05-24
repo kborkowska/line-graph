@@ -237,6 +237,7 @@ void Iligra::connectN1(){
     //highlighted = Nw[0]
     //G v1-v2
     G.connect(0,1);
+    G.getLine(0, 1)->setLabel(QString::number(0) + QString::number(1));
     Nw.erase(Nw.begin());
     return;
 }
@@ -293,7 +294,7 @@ bool Iligra::loadFromFile(QString file){
         QString line = in.readLine();
         std::vector<int> inner;
         QStringList l = line.split(":");
-        inner.push_back(l[0].toInt());
+        //inner.push_back(l[0].toInt());
         l = l[1].split(" ");
         for(auto &li : l){
             inner.push_back(li.toInt());
@@ -351,6 +352,7 @@ bool Iligra::loadFromFile(QString file){
     Nw = H.getNodesIndexes();
     std::cout<<"##############"<<std::endl;
     std::cout<<H.getNodesIndexes()[2]<<std::endl;
+    H.printAdjecencyList();
     changeStep(LOADED);
     return true;
 }
