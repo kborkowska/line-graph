@@ -27,6 +27,7 @@ public:
     void setIligra(Iligra *iligra);
     void updateLineGraph();
     void updateNodeGraph();
+    void updateDrawWindow();
 
 private slots:
     void on_nextStepButton_clicked();
@@ -39,7 +40,6 @@ private:
     Graph *nodeGraph_ = nullptr;
     int currentNode = 0;
     Iligra *iligra_;
-    QStringList colorList;
 };
 
 #endif // DRAWWINDOW_H

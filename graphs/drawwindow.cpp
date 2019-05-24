@@ -3,28 +3,6 @@
 
 DrawWindow::DrawWindow(QWidget *parent) : QDialog(parent), ui(new Ui::DrawWindow) {
     ui->setupUi(this);
-
-    colorList << "olivedrab"
-              << "orange"
-              << "orangered"
-              << "orchid"
-              << "palegoldenrod"
-              << "palegreen"
-              << "paleturquoise"
-              << "palevioletred"
-              << "papayawhip"
-              << "peachpuff"
-              << "peru"
-              << "pink"
-              << "plum"
-              << "powderblue"
-              << "purple"
-              << "rosybrown"
-              << "royalblue"
-              << "saddlebrown"
-              << "salmon"
-              << "sandybrown"
-              << "seagreen";
 }
 
 DrawWindow::~DrawWindow() {
@@ -39,10 +17,6 @@ void DrawWindow::paintEvent(QPaintEvent *event) {
 void DrawWindow::setLineGraph(Graph *lineGraph) {
     this->lineGraph_ = lineGraph;
     this->ui->lineGraphDrawArea->setGraph(lineGraph);
-    for(int i = 0; i < lineGraph_->getNodeCount(); i++) {
-        ui->nwList->addItem(QString::number(i));
-        lineGraph->getNode(i)->setColor(colorList.at(i));
-    }
 }
 
 void DrawWindow::updateLineGraph() {
@@ -53,6 +27,8 @@ void DrawWindow::updateLineGraph() {
     for (int i: iligra_->highlighted) {
         lineGraph_->getNode(i)->setHighlighted(true);
     }
+
+    lineGraph_->colorNodes();
 }
 
 void DrawWindow::setNodeGraph(Graph *nodeGraph) {
@@ -74,6 +50,7 @@ void DrawWindow::on_nextStepButton_clicked()
     setCurrentStepInfo(iligra_->stepInfo);
     updateLineGraph();
     updateNodeGraph();
+    updateDrawWindow();
     update();
 }
 
@@ -86,6 +63,7 @@ void DrawWindow::setIligra(Iligra *iligra) {
     setCurrentStepInfo(iligra_->stepInfo);
     setLineGraph(&(iligra_->H));
     setNodeGraph(&(iligra_->G));
+    iligra_->G.alphabeticalIndexing = true;
     updateLineGraph();
 }
 
@@ -95,5 +73,32 @@ void DrawWindow::on_loadFromFileButton_clicked()
                                                     QFileDialog::DontUseNativeDialog);
     std::cout << fileName.toStdString() << std::endl;
     iligra_->loadFromFile(fileName);
+    setLineGraph(&(iligra_->H));
+    setNodeGraph(&(iligra_->G));
+    lineGraph_->repositionNodes();
+    updateDrawWindow();
     this->update();
+}
+
+void DrawWindow::updateDrawWindow() {
+    ui->NhList->clear();
+    ui->NwList->clear();
+    ui->JList->clear();
+
+    for(auto it = iligra_->Nh.begin(); it != iligra_->Nh.end(); it++) {
+        ui->NhList->addItem(QString::number(*it));
+    }
+
+    for(auto it = iligra_->Nw.begin(); it != iligra_->Nw.end(); it++) {
+        ui->NwList->addItem(QString::number(*it));
+    }
+    for(auto it = iligra_->J.begin(); it != iligra_->J.end(); it++) {
+        ui->JList->addItem(QString::number(*it));
+    }
+
+    lineGraph_->repositionNodes();
+    nodeGraph_->repositionNodes();
+    updateLineGraph();
+    updateNodeGraph();
+    update();
 }

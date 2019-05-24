@@ -4,6 +4,27 @@
 #include <cstddef>
 
 Graph::Graph(){
+    colorList << "olivedrab"
+              << "orange"
+              << "orangered"
+              << "orchid"
+              << "palegoldenrod"
+              << "palegreen"
+              << "paleturquoise"
+              << "palevioletred"
+              << "papayawhip"
+              << "peachpuff"
+              << "peru"
+              << "pink"
+              << "plum"
+              << "powderblue"
+              << "purple"
+              << "rosybrown"
+              << "royalblue"
+              << "saddlebrown"
+              << "salmon"
+              << "sandybrown"
+              << "seagreen";
 }
 
 int Graph::addNode(){
@@ -15,6 +36,7 @@ int Graph::addNode(){
             break;
         }
     }
+    getNode(idx)->alphaIndex = 'A' + idx;
     return idx;
 }
 
@@ -286,5 +308,11 @@ void Graph::repositionNodes() {
             nodePosition.setY(qMin(qMax(nodePosition.y() + (int)(yForce), RADIUS), MAX_Y - RADIUS));
             setNodePosition(nodeIterator, nodePosition);
         }
+    }
+}
+
+void Graph::colorNodes() {
+    for (int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
+        getNode(nodeIterator)->setColor(colorList.at(nodeIterator));
     }
 }
