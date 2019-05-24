@@ -45,6 +45,7 @@ void DrawWindow::setLineGraph(Graph *lineGraph) {
 }
 
 void DrawWindow::updateLineGraph() {
+#include <QRandomGenerator>
     for (int i = 0; i < lineGraph_->getNodeCount(); i++) {
         lineGraph_->getNode(i)->setHighlighted(false);
     }
@@ -89,8 +90,9 @@ void DrawWindow::setIligra(Iligra *iligra) {
 
 void DrawWindow::on_loadFromFileButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this);
+    QString fileName = QFileDialog::getOpenFileName(this,QString(),QString(), QString(),nullptr,
+                                                    QFileDialog::DontUseNativeDialog);
     std::cout << fileName.toStdString() << std::endl;
-    iligra_->loadFromFile(fileName);
+    iligra_->loadFromFile("/home/karolina/Studia/GIS/graphs/graph.txt");
     this->update();
 }

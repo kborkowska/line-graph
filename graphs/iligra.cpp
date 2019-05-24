@@ -3,10 +3,12 @@
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>
+#include <iostream>
 
 Iligra::Iligra(){
     step = NONE;
     stepInfo = "Load a line graph";
+    std::cout<<stepInfo.toStdString()<<std::endl;
 }
 
 
@@ -44,16 +46,40 @@ bool Iligra::changeState(){
                                 return true;
           case N1_ONLY_NGBRS:   stepInfo = "Analyze size of J.";
                                 step = ANALYSE_J;
+                                return true;
           case ANALYSE_J:       {if(J.size()==1 || J.size()==2){
-                                    stepInfo = "J has 1 or 2 nodes. Check whether one of its nodes has more than 2 neighbours that are not n1 or n1"
+                                    stepInfo = "J has 1 or 2 nodes. Check whether one of its nodes (nu) has more than 2 neighbours that are not n1 or n1"
                                                " and all of its neighbours are connected to either n1 or n2.";
                                     step = ONE_TWO_J;
                                 } else {
-                                    stepInfo = "J has 3 or more nodes. Check whether there is a node"
+                                    stepInfo = "J has 3 or more nodes. Check whether there is a node nu"
                                                " that is not adjecent to any other node in J";
                                     step = THREE_J;
                                 }
                                 return true;
+                                }
+          case ONE_TWO_J:       {int nu = rightNExistInJ_oneTwo();
+                                 if(nu){
+                                    stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
+                                               "Set nu as verticle of v2";
+                                    step = NU;
+                                    setNu(nu);
+                                 } else {
+                                     stepInfo = "Haven't found right nu, commencing special cases scenario";
+                                     step = INIT_SPECIAL;
+
+                                 }
+                                 return true;
+                                }
+           case THREE_J:        {int nu = rightNExistInJ_three();
+                                 if(nu){
+                                     stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
+                                                "Set nu as verticle of v2";
+                                     setNu(nu);
+                                 } else {
+                                     stepInfo = "Haven't found right nu. Moving on.";
+                                 }
+                                 step = NU;
                                 }
     }
     return true;
@@ -62,13 +88,68 @@ bool Iligra::changeState(){
 
 
 
+void Iligra::setNu(int nu){
+    //Nw  = H.getNodesIndexes \ n1 n2 (n1\n2) nu
+    //Nh Nb[0] (n1\n2) nu
+    //Nb Nw[0].adjecencyList()
+    //vlh v1 (v2) v2
+    //highlighted = n1 n2 (n1\n2)
+    //G -v1-v2
+    // J (n1 n n2)\nu
+    Nh.push_back(nu);
+    vlh.push_back(G.getNodesIndexes()[1]);
+    std::vector<int>::iterator i = std::find(J.begin(), J.end(), nu);
+    J.erase(i);
+    i = std::find(Nw.begin(), Nw.end(), nu);
+    Nw.erase(i);
+}
+
+int Iligra::rightNExistInJ_three(){
+    for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
+        std::vector<int> nbn = H.getSingleAdjecencyList(*it);
+        std::vector<int>::iterator in = nbn.begin();
+        for(; in < nbn.end(); ++in){
+            if(std::find(J.begin(), J.end(), *in) != J.end()){
+                break;
+            }
+        }
+        if(in == nbn.end()){
+            return *it;
+        }
+    }
+    return -1;
+}
+
+int Iligra::rightNExistInJ_oneTwo(){
+    for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
+        std::vector<int> nbn = H.getSingleAdjecencyList(*it);
+        std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
+        std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
+        if(nbn.size()<3){
+            break;
+        } else {
+            std::vector<int>::iterator in = nbn.begin();
+            for(; in < nbn.end(); ++in){
+                if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
+                   std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
+                    break;
+                }
+            }
+            if(in == nbn.end()){
+                return *it;
+            }
+        }
+    }
+    return -1;
+}
+
 
 void Iligra::n1OnlyNeighbours(){
     //Nw  = H.getNodesIndexes \ n1 n2 (n1\n2)
     //Nh Nb[0] (n1\n2)
     //Nb Nw[0].adjecencyList()
     //vlh v1 (v2)
-    //highlighted = Nw[0] (n1\n2)
+    //highlighted = n1 n2 (n1\n2)
     //G -v1-v2
     // J (n1 n n2)
     std::vector<int> nb2 = H.getSingleAdjecencyList(Nb[0]);
@@ -170,7 +251,6 @@ bool Iligra::loadFromFile(QString file){
     QFile graphFile(file);
     if (!graphFile.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
-
     QTextStream in(&graphFile);
     //std::vector<int> indexes;
     std::vector<std::vector<int>> adjecencyList, tmp;
@@ -197,28 +277,30 @@ bool Iligra::loadFromFile(QString file){
                (*it1).erase(i--);
             }
         }
+        if(it1 == adjecencyList.begin()){
+            continue;
+        }
         std::vector<std::vector<int>>::iterator it2 = --it1;
+
         while((*it1)[0]<(*it2)[0] && it2>adjecencyList.begin()){
             --it2;
         }
+
         if((*it1)[0] == (*it2)[0]){
             adjecencyList.erase(it1--);
         } else if(++it2!=it1){
             adjecencyList.insert(it2, *it1);
             adjecencyList.erase(it1);
         }
-    }
 
+    }
     for(std::vector<std::vector<int>>::iterator it1 = adjecencyList.begin();
         it1 < adjecencyList.end(); ++it1){
         int idx = (*it1)[0];
         (*it1).erase((*it1).begin());
         H.addNode(idx, (*it1));
     }
-
     Nw = H.getNodesIndexes();
-
     changeStep(LOADED);
-
     return true;
 }
