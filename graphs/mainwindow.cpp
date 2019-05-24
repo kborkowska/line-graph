@@ -103,7 +103,7 @@ void MainWindow::on_pushButton_101_clicked()
 {
     drawWindow = new DrawWindow();
     Iligra *iligra = new Iligra();
-    Graph *graph = &(iligra->G);
+    Graph *graph = &(iligra->H);
     graph->addNode();
     graph->addNode();
     graph->addNode();

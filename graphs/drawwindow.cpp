@@ -33,6 +33,7 @@ DrawWindow::~DrawWindow() {
 
 void DrawWindow::paintEvent(QPaintEvent *event) {
     ui->lineGraphDrawArea->update();
+    ui->nodeGraphDrawArea->update();
 }
 
 void DrawWindow::setLineGraph(Graph *lineGraph) {
@@ -83,8 +84,8 @@ void DrawWindow::setCurrentStepInfo(QString stepInfo) {
 void DrawWindow::setIligra(Iligra *iligra) {
     iligra_ = iligra;
     setCurrentStepInfo(iligra_->stepInfo);
-    setLineGraph(&(iligra_->G));
-    setNodeGraph(&(iligra_->H));
+    setLineGraph(&(iligra_->H));
+    setNodeGraph(&(iligra_->G));
     updateLineGraph();
 }
 
