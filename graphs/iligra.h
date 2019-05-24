@@ -30,10 +30,10 @@ public:
     bool changeState();
     bool loadFromFile(QString file);
 
-    enum Step {NONE, LOADED, ARBITRARY_N1, ARBITRARY_N2, ADD_FIRST_NODES,
+    enum Step {DONE, NONE, LOADED, ARBITRARY_N1, ARBITRARY_N2, ADD_FIRST_NODES,
                CONNECT_N1, FIRST_CONECT_N2, N1_ONLY_NGBRS, ANALYSE_J, ONE_TWO_J,
                THREE_J, NU, INIT_SPECIAL, EACH_IN_J, SPECIAL, SPECIAL_ZERO_J, SPECIAL_ONE_J,
-               SPECIAL_TWO_J, SPECIAL_JONE_L, SPECIAL_JTWO_L};
+               SPECIAL_TWO_J, SPECIAL_ZERO_JONE_L, SPECIAL_ZERO_JTWO_L};
 
 private:
     Step step;
@@ -51,6 +51,8 @@ private:
     int getNodeWithLessThanThreeZ();
     int getnr();
     bool checkIfIsNeighbour(int idx, int idxPot);
+    void addNuToNh(int i);
+    bool isnxInC();
 };
 
 #endif // ILIGRA_H

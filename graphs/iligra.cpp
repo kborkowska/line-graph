@@ -81,6 +81,7 @@ bool Iligra::changeState(){
                                      stepInfo = "Haven't found right nu. Moving on.";
                                  }
                                  step = NU;
+                                 return true;
                                 }
            case INIT_SPECIAL:   {nu = getNodeWithLessThanThreeZ();
                                  if(nu>=0){
@@ -90,6 +91,7 @@ bool Iligra::changeState(){
                                      stepInfo = "No proper candidate for special cases scenario";
                                      step = EACH_IN_J;
                                  }
+                                 return true;
                                 }
            case SPECIAL:        {int zSize = getZSize(nu);
                                  if(zSize == 0){
@@ -105,21 +107,76 @@ bool Iligra::changeState(){
                                                 " Again check size of J";
                                      step = SPECIAL_TWO_J;
                                  }
+                                 return true;
                                 }
            case SPECIAL_ZERO_J: {if(J.size()==1){
                                     stepInfo = "J nas one member. Check number of verticles in G - L.";
-                                    step = SPECIAL_JONE_L;
+                                    step = SPECIAL_ZERO_JONE_L;
                                  } else if(J.size()==2 && checkIfIsNeighbour(nu, getnr())){
                                     stepInfo = "J nas two members and nr is not a part of nu's neighbourhood. "
                                                "Check number of verticles in G - L.";
-                                    step = SPECIAL_JTWO_L;
+                                    step = SPECIAL_ZERO_JTWO_L;
                                  }else{
                                     stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
                                     step = EACH_IN_J;
                                  }
+                                 return true;
                                 }
+            case SPECIAL_ZERO_JONE_L:
+                if(H.getNodeCount()==3){
+                    stepInfo = "G is K_3 or K_1,3";
+                    step = DONE;
+                    G.connect(1,2);
+                } else if (H.getNodeCount()>3){
+                    addNuToNh(0);
+                    stepInfo = "nu is connected to v1";
+                    step = EACH_IN_J;
+                } else {
+                    stepInfo = "ERROR!";
+                    step = DONE;
+                    return false;
+                }
+                return true;
+            case SPECIAL_ZERO_JTWO_L:
+                if(H.getNodeCount()==4){
+                    addNuToNh(0);
+                    stepInfo = "nu is connected to v1 (or v2 - isomorphic)";
+                    step = EACH_IN_J;
+                } else if (H.getNodeCount()>5){
+                    int v = -1;
+                    isnxInC() ? v=0:v=1;
+                    addNuToNh(v);
+                    stepInfo = "nu is connected to v"+ QString::number(v);
+                    step = EACH_IN_J;
+                } else {
+                    stepInfo = "ERROR!";
+                    step = DONE;
+                    return false;
+                }
+                return true;
     }
     return true;
+}
+
+bool Iligra::isnxInC(){
+    int nx = Nw[0];
+    if(checkIfIsNeighbour(0, nx) || checkIfIsNeighbour(1, nx) ){
+        return true;
+    }
+    return false;
+}
+
+void Iligra::addNuToNh(int i){
+    G.addAdjecentToANode(-10, G.getNodesIndexes()[i]);
+    Nh.push_back(nu);
+    vlh.push_back(G.getNodesIndexes()[i]);
+    for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
+        if(*it == nu){
+            Nw.erase(it);
+            break;
+        }
+    }
+    return;
 }
 
 bool Iligra::checkIfIsNeighbour(int idx, int idxPot){
