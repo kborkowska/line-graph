@@ -8,6 +8,7 @@
 #include <QPoint>
 #include <QLineF>
 #include <QRandomGenerator>
+#include <QString>
 #include "math.h"
 
 #define MAX_NODES 20
@@ -33,10 +34,16 @@ public:
         int setIndex(int idx);
         void setPosition(QPoint position);
         QPoint getPosition();
+        void setColor(QString color);
+        QString getColor();
+        bool isHighlighted();
+        void setHighlighted(bool highlighted);
     private:
         int index_;
         std::vector<int> adjecencyList_;
         QPoint position_;
+        QString color_;
+        bool highlighted_ = false;
     };
 
     Graph();

@@ -97,7 +97,8 @@ void MainWindow::changeNumberOfNodes(int i){
 void MainWindow::on_pushButton_101_clicked()
 {
     drawWindow = new DrawWindow();
-    Graph *graph = new Graph();
+    Iligra *iligra = new Iligra();
+    Graph *graph = &(iligra->G);
     graph->addNode();
     graph->addNode();
     graph->addNode();
@@ -113,7 +114,9 @@ void MainWindow::on_pushButton_101_clicked()
 
     graph->repositionNodes();
 
-    drawWindow->addLineGraph(graph);
+    graph->getNode(0)->setHighlighted(true);
+
+    drawWindow->setIligra(iligra);
     drawWindow->show();
     drawWindow->update();
 }
