@@ -154,9 +154,29 @@ bool Iligra::changeState(){
                     return false;
                 }
                 return true;
+            case SPECIAL_ONE_J:
+                {if(J.size()==1){
+                    stepInfo = "J nas one member. Check number of verticles in G - L.";
+                    step = SPECIAL_ZERO_JTWO_L;
+                } else if(J.size()==2 && checkIfIsNeighbour(nu, getnr())){
+                    stepInfo = "J nas two members and nr is not a part of nu's neighbourhood. "
+                               "Check ns's neighbourhood.";
+                    step = SPECIAL_ONE_JTWO_L;
+                }else{
+                    stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
+                    step = EACH_IN_J;
+                }
+                return true;}
+            case SPECIAL_ONE_JTWO_L:
+                if(!checkIfIsNeighbour(getnr(),getns())){
+                    stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
+                    step = EACH_IN_J;
+                }
     }
     return true;
 }
+
+
 
 bool Iligra::isnxInC(){
     int nx = Nw[0];
@@ -182,6 +202,21 @@ void Iligra::addNuToNh(int i){
 bool Iligra::checkIfIsNeighbour(int idx, int idxPot){
     std::vector<int> nbn = H.getSingleAdjecencyList(idx);
     return std::find(nbn.begin(), nbn.end(), idxPot) != nbn.end();
+}
+
+int Iligra::getns(){
+    std::vector<int> nbn = H.getSingleAdjecencyList(idx);
+    std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
+    std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
+    int zSize = 0;
+    std::vector<int>::iterator in = nbn.begin();
+    for(; in < nbn.end(); ++in){
+        if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
+            std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
+                return zSize;
+        }
+    }
+    return -1;
 }
 
 int Iligra::getnr(){
