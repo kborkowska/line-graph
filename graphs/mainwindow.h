@@ -29,6 +29,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     DrawWindow *drawWindow;
+    Graph g;
 
     static const int MAXNONODES              = 10;
     static const int NODESMATRIXBTNS_XSTART  = 250;

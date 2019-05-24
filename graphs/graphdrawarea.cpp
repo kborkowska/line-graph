@@ -35,7 +35,7 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
             painter.drawEllipse(nodePosition, RADIUS, RADIUS);
 
             painter.setPen(Qt::black);
-            painter.drawText(nodePosition, QString::number(nodeIterator));
+            painter.drawText(nodePosition.x() - RADIUS, nodePosition.y() - RADIUS, 2*RADIUS, 2*RADIUS, Qt::AlignHCenter | Qt::AlignVCenter, QString::number(nodeIterator));
         }
     }
 }

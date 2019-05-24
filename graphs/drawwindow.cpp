@@ -71,6 +71,8 @@ void DrawWindow::on_nextStepButton_clicked()
     iligra_->changeState();
     setCurrentStepInfo(iligra_->stepInfo);
     updateLineGraph();
+    updateNodeGraph();
+    update();
 }
 
 void DrawWindow::setCurrentStepInfo(QString stepInfo) {
@@ -89,6 +91,6 @@ void DrawWindow::on_loadFromFileButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this);
     std::cout << fileName.toStdString() << std::endl;
-    //iligra_->loadFromFile(fileName);
+    iligra_->loadFromFile(fileName);
     this->update();
 }

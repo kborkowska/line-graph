@@ -20,6 +20,7 @@ void MainWindow::toogleBinaryButton(){
     if(idx_x!= idx_y){
         nodesMatrix[idx_x][idx_y]->setText(QString::number((nodesMatrix[idx_x][idx_y]->text().toInt()+3)%2));
         nodesMatrix[idx_y][idx_x]->setText(QString::number((nodesMatrix[idx_y][idx_x]->text().toInt()+3)%2));
+        g.connect(idx_x, idx_y);
     }
 }
 
@@ -39,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     addNodeLayerToMatrix(1);
     addNodeLayerToMatrix(2);
+    g.addNode();
+    g.addNode();
 
     connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged),this, [=](int i) {changeNumberOfNodes(i); });
 
@@ -87,8 +90,10 @@ void MainWindow::addButtonToMatrix(int index_x, int index_y){
 void MainWindow::changeNumberOfNodes(int i){
     if(noNodes < i && i <= MAXNONODES){
         addNodeLayerToMatrix(i);
+        g.addNode();
     } else if (noNodes > i){
         removeNodeLayerInMatrix(noNodes);
+        g.removeNode(g.getNodeCount()-1);
     }
     noNodes = i;
 }
@@ -112,11 +117,12 @@ void MainWindow::on_pushButton_101_clicked()
     graph->connect(0, 4);
     graph->connect(4, 3);
 
-    graph->repositionNodes();
+
 
     graph->getNode(0)->setHighlighted(true);
-
+    graph->repositionNodes();
     drawWindow->setIligra(iligra);
+    g.repositionNodes();
     drawWindow->show();
     drawWindow->update();
 }
