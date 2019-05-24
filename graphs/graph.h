@@ -14,7 +14,7 @@
 
 #define MAX_NODES 20
 #define K_CONSTANT 500
-#define C_CONSTANT 0.01
+#define C_CONSTANT 0.009
 #define MAX_X 400
 #define MAX_Y 300
 #define RADIUS 15

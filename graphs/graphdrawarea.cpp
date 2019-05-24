@@ -19,6 +19,9 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
     if (graph_ != nullptr) {
 
         for (int lineIterator = 0; lineIterator < graph_->getLineCount(); lineIterator++) {
+            QFont font = painter.font();
+            font.setPointSize(10);
+            painter.setFont(font);
             painter.setPen(Qt::black);
             Graph::Line *line = graph_->lines_[lineIterator].get();
             painter.drawLine(graph_->getNodePosition(line->node1), graph_->getNodePosition(line->node2));

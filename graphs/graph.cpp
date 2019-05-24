@@ -295,6 +295,14 @@ void Graph::repositionNodes() {
             std::vector<int> adjacent = getSingleAdjecencyList(nodeIterator);
             for (int destIterator = 0; destIterator < getNodeCount(); destIterator++) {
                 QPoint destPosition = getNodePosition(destIterator);
+                if ((nodePosition == destPosition) && nodeIterator != destIterator) {
+                    std::cout << nodeIterator << " " << destIterator<< std::endl;
+                    QRandomGenerator gen(nodeIterator + 1);
+                    int x = gen.bounded(0, MAX_X);
+                    int y = gen.bounded(0, MAX_Y);
+                    setNodePosition(nodeIterator, QPoint(x, y));
+                    nodePosition = getNodePosition(nodeIterator);
+                }
                 if (nodeIterator == destIterator) {
                     continue;
                 }
@@ -319,6 +327,7 @@ void Graph::repositionNodes() {
             //std::cout << (int)xForce << " " << (int)yForce << std::endl;
             nodePosition.setX(qMin(qMax(nodePosition.x() + (int)(xForce), RADIUS), MAX_X - RADIUS));
             nodePosition.setY(qMin(qMax(nodePosition.y() + (int)(yForce), RADIUS), MAX_Y - RADIUS));
+
             setNodePosition(nodeIterator, nodePosition);
         }
     }
