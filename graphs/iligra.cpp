@@ -302,5 +302,6 @@ bool Iligra::loadFromFile(QString file){
     }
     Nw = H.getNodesIndexes();
     changeStep(LOADED);
+    std::cout<<"kurwa"<<std::endl;
     return true;
 }

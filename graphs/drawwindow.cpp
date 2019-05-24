@@ -93,6 +93,6 @@ void DrawWindow::on_loadFromFileButton_clicked()
     QString fileName = QFileDialog::getOpenFileName(this,QString(),QString(), QString(),nullptr,
                                                     QFileDialog::DontUseNativeDialog);
     std::cout << fileName.toStdString() << std::endl;
-    iligra_->loadFromFile("/home/karolina/Studia/GIS/graphs/graph.txt");
+    iligra_->loadFromFile(fileName);
     this->update();
 }
