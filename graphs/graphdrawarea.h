@@ -25,7 +25,6 @@ public:
 private:
     Ui::GraphDrawArea *ui;
     Graph *graph_ = nullptr;
-    QStringList colorList;
 };
 
 #endif // GRAPHDRAWAREA_H

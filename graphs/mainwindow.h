@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include "drawwindow.h"
+#include "iligra.h"
 
 namespace Ui {
 class MainWindow;

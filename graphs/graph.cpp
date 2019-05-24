@@ -211,6 +211,22 @@ QPoint Graph::Node::getPosition() {
     return position_;
 }
 
+void Graph::Node::setColor(QString color) {
+    color_ = color;
+}
+
+QString Graph::Node::getColor() {
+    return color_;
+}
+
+void Graph::Node::setHighlighted(bool highlighted) {
+    highlighted_ = highlighted;
+}
+
+bool Graph::Node::isHighlighted(){
+    return highlighted_;
+}
+
 void Graph::setNodePosition(int idx, QPoint position) {
     for(auto& node: nodes_){
         if(node->getIndex() == idx){

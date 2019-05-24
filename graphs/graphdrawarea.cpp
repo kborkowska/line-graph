@@ -5,29 +5,6 @@ GraphDrawArea::GraphDrawArea(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GraphDrawArea)
 {
-    colorList << "olivedrab"
-              << "orange"
-              << "orangered"
-              << "orchid"
-              << "palegoldenrod"
-              << "palegreen"
-              << "paleturquoise"
-              << "palevioletred"
-              << "papayawhip"
-              << "peachpuff"
-              << "peru"
-              << "pink"
-              << "plum"
-              << "powderblue"
-              << "purple"
-              << "red"
-              << "rosybrown"
-              << "royalblue"
-              << "saddlebrown"
-              << "salmon"
-              << "sandybrown"
-              << "seagreen";
-
     ui->setupUi(this);
 }
 
@@ -51,8 +28,13 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
         for(int nodeIterator = 0; nodeIterator < graph_->getNodeCount(); nodeIterator++) {
             QPoint nodePosition = graph_->getNodePosition(nodeIterator);
 
-            painter.setBrush(QColor(colorList.at(nodeIterator%colorList.size())));
+            painter.setBrush(QColor(graph_->getNode(nodeIterator)->getColor()));
+            bool highlighted = graph_->getNode(nodeIterator)->isHighlighted();
+            QPen pen(highlighted ? Qt::red : Qt::black, highlighted ? 5 : 1);
+            painter.setPen(pen);
             painter.drawEllipse(nodePosition, RADIUS, RADIUS);
+
+            painter.setPen(Qt::black);
             painter.drawText(nodePosition, QString::number(nodeIterator));
         }
     }
