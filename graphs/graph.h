@@ -55,6 +55,7 @@ public:
     int addNode(const std::vector<int> &adjList);
     int addNode(int idx, const std::vector<int> &adjList);
     bool removeNode(int idx);
+    void clear();
     void printAdjecencyList();
     std::vector<std::vector<int>> getAdjecencyList();
     std::vector<int> getNodesIndexes();

@@ -83,6 +83,15 @@ bool Graph::removeNode(int idx){
     return result;
 }
 
+void Graph::clear(){
+    std::vector<int> idxs = getNodesIndexes();
+    for(auto &idx: idxs){
+        removeNode(idx);
+    }
+    return;
+}
+
+
 std::vector<std::vector<int>> Graph::getAdjecencyList(){
     std::vector<std::vector<int>> adjecencyList;
     for(auto &node: nodes_){

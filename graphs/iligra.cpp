@@ -294,6 +294,7 @@ bool Iligra::loadFromFile(QString file){
         }
 
     }
+    H.clear();
     for(std::vector<std::vector<int>>::iterator it1 = adjecencyList.begin();
         it1 < adjecencyList.end(); ++it1){
         int idx = (*it1)[0];
@@ -302,6 +303,5 @@ bool Iligra::loadFromFile(QString file){
     }
     Nw = H.getNodesIndexes();
     changeStep(LOADED);
-    std::cout<<"kurwa"<<std::endl;
     return true;
 }
