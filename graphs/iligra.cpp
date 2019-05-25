@@ -571,6 +571,8 @@ void Iligra::firstConnectN2(){
     //highlighted = Nw[0]
     //G -v1-v2
     G.addAdjecentToANode(-10, G.getNodesIndexes()[0]);
+    G.addLine(G.getNodesIndexes()[0], -10);
+    G.getLine(G.getNodesIndexes()[0], -10)->setLabel(1, -1);
     Nh.push_back(highlighted[1]);
     vlh.push_back(G.getNodesIndexes()[0]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
@@ -590,7 +592,7 @@ void Iligra::connectN1(){
     //highlighted = Nw[0]
     //G v1-v2
     G.connect(0,1);
-    G.getLine(0, 1)->setLabel(QString::number(0) + QString::number(1));
+    G.getLine(0, 1)->setLabel(0, -1);
     Nw.erase(Nw.begin());
     return;
 }

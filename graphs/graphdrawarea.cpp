@@ -22,13 +22,36 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
             QFont font = painter.font();
             font.setPointSize(10);
             painter.setFont(font);
-            painter.setPen(Qt::black);
             Graph::Line *line = graph_->lines_[lineIterator].get();
-            painter.drawLine(graph_->getNodePosition(line->node1), graph_->getNodePosition(line->node2));
-            QLine qline(graph_->getNodePosition(line->node1), graph_->getNodePosition(line->node2));
-            painter.setPen(Qt::blue);
-            QPoint position = graph_->getNodePosition(line->node1) + QPoint(qline.dx()/2, qline.dy()/2);
-            painter.drawText(position, line->getLabel());
+            painter.setPen(Qt::black);
+            if (line->label1 != -1){
+                QPen pen(QColor(graph_->colorList.at(line->label1)), 2);
+                painter.setPen(pen);
+            }
+            QPoint p1, p2;
+
+            if(line->node1 >= 0 && line->node2 == -10) {
+                p1 = graph_->getNodePosition(line->node1);
+                p2 = QPoint(p1.x() + 90, p1.y() - 40);
+            } else if(line->node2 >= 0 && line->node1 == -10) {
+                p1 = graph_->getNodePosition(line->node2);
+                p2 = QPoint(p1.x() + 90, p1.y() - 40);
+            } else {
+                p1 = graph_->getNodePosition(line->node1);
+                p2 = graph_->getNodePosition(line->node2);
+            }
+
+            painter.drawLine(p1, p2);
+            QLine qline(p1, p2);
+            QPoint position = p1 + QPoint(qline.dx()/2, qline.dy()/2);
+            if (line->label1 != -1){
+                painter.setPen(QColor(graph_->colorList.at(line->label1)));
+                painter.drawText(position.x() - 5, position.y(), QString::number(line->label1));
+            }
+            if (line->label2 != -1) {
+                painter.setPen(QColor(graph_->colorList.at(line->label2)));
+                painter.drawText(position.x() + 5, position.y(), QString::number(line->label2));
+            }
         }
 
         for(int nodeIterator = 0; nodeIterator < graph_->getNodeCount(); nodeIterator++) {
