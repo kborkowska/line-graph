@@ -192,7 +192,7 @@ bool Graph::connect(int adjIdx, int nodeIdx){
     bool res1 = addAdjecentToANode(adjIdx, nodeIdx);
     bool res2 = addAdjecentToANode(nodeIdx, adjIdx);
     if(!containsLine(adjIdx, nodeIdx)) {
-        lines_.push_back(std::make_unique<Graph::Line>(adjIdx, nodeIdx));
+        lines_.push_back(std::make_unique<Graph::Line>(adjIdx, nodeIdx, -1));
     }
     return res1 && res2;
 }
@@ -339,9 +339,10 @@ void Graph::colorNodes() {
     }
 }
 
-Graph::Line::Line(int node1, int node2) {
+Graph::Line::Line(int node1, int node2, int label) {
     this->node1 = node1;
     this->node2 = node2;
+    this->label1 = label;
 }
 
 void Graph::fillLines() {
@@ -349,7 +350,7 @@ void Graph::fillLines() {
         std::vector<int> adjacentList = getSingleAdjecencyList(nodeIterator);
         for (int adjacent: adjacentList) {
             if (!containsLine(nodeIterator, adjacent)) {
-                lines_.push_back(std::make_unique<Graph::Line>(nodeIterator, adjacent));
+                lines_.push_back(std::make_unique<Graph::Line>(nodeIterator, adjacent, -1));
             }
         }
     }
@@ -364,10 +365,12 @@ bool Graph::containsLine (int node1, int node2) {
     return false;
 }
 
-Graph::Line* Graph::getLine (int node1, int node2) {
+Graph::Line* Graph::getLine (int node1, int node2, int label) {
     for(std::vector<std::unique_ptr<Graph::Line>>::iterator iter=lines_.begin(); iter<lines_.end(); ++iter){
-        if(((*iter)->node1 == node1 && (*iter)->node2 == node2) || ((*iter)->node1 == node2 && (*iter)->node2 == node1)){
-            return iter->get();
+        if((((*iter)->node1 == node1 && (*iter)->node2 == node2) || ((*iter)->node1 == node2 && (*iter)->node2 == node1))){
+            if (label == (*iter)->label1 || label == -1) {
+                return iter->get();
+            }
         }
     }
     return nullptr;
@@ -379,4 +382,26 @@ QString Graph::Line::getLabel() {
 
 void Graph::Line::setLabel(QString label) {
     label_ = label;
+}
+
+void Graph::addLine(int node1, int node2, int label) {
+    if (!containsLine(node1, node2) || node1 == -10 || node2 == -10) {
+        lines_.push_back(std::make_unique<Graph::Line>(node1, node2, label));
+    }
+}
+
+void Graph::connectHangingLine(int node1, int node2, int label) {
+    Line *line = getLine(node1, node2, label);
+    if ((node1 >=0 && node2 == -10)){
+        if (line != nullptr) {
+            line->node2 = node2;
+            return;
+        }
+    }
+    if ((node2 >=0 && node1 == -10)){
+        if (line != nullptr) {
+            line->node1 = node1;
+            return;
+        }
+    }
 }
