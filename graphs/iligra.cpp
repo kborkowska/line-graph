@@ -48,7 +48,11 @@ bool Iligra::changeState(){
           case N1_ONLY_NGBRS:   stepInfo = "Analyze size of J.";
                                 step = ANALYSE_J;
                                 return true;
-          case ANALYSE_J:       {if(J.size()==1 || J.size()==2){
+          case ANALYSE_J:       {if(J.size()==0){
+                                 stepInfo = "ERROR!";
+                                 step = DONE;
+                                 return false;
+                                 }else if(J.size()==1 || J.size()==2){
                                     stepInfo = "J has 1 or 2 nodes. Check whether one of its nodes (nu) has more than 2 neighbours that are not n1 or n1"
                                                " and all of its neighbours are connected to either n1 or n2.";
                                     step = ONE_TWO_J;
@@ -62,9 +66,9 @@ bool Iligra::changeState(){
           case ONE_TWO_J:       {nu = rightNExistInJ_oneTwo();
                                  if(nu>=0){
                                     stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
-                                               "Set nu as verticle of v2";
+                                               "Set nu as link of v2";
                                     step = NU;
-                                    setNu(nu);
+                                    addNuConnectionToG(nu);
                                  } else {
                                      stepInfo = "Haven't found right nu, commencing special cases scenario";
                                      step = INIT_SPECIAL;
@@ -75,8 +79,8 @@ bool Iligra::changeState(){
            case THREE_J:        {nu = rightNExistInJ_three();
                                  if(nu>=0){
                                      stepInfo = "Found right nu. Remove it form J and Nw, add to Nh."
-                                                "Set nu as verticle of v2";
-                                     setNu(nu);
+                                                "Set nu as link of v2";
+                                     addNuConnectionToG(nu);
                                  } else {
                                      stepInfo = "Haven't found right nu. Moving on.";
                                  }
@@ -88,7 +92,7 @@ bool Iligra::changeState(){
                                      stepInfo = "Found nu for special cases: " + QString::number(nu);
                                      step = SPECIAL;
                                  } else {
-                                     stepInfo = "No proper candidate for special cases scenario";
+                                     stepInfo = "No proper candidate for special cases scenario. Moving on.";
                                      step = EACH_IN_J;
                                  }
                                  return true;
@@ -104,17 +108,17 @@ bool Iligra::changeState(){
                                      step = SPECIAL_ONE_J;
                                  } else if(zSize == 2){
                                      stepInfo = "nu has two neighbours that are not n1 or n2."
-                                                " Again check size of J";
-                                     step = SPECIAL_TWO_J;
+                                                " Checking whether ns belongs ";
+                                     step = SPECIAL_TWO_NS;
                                  }
                                  return true;
                                 }
            case SPECIAL_ZERO_J: {if(J.size()==1){
-                                    stepInfo = "J nas one member. Check number of verticles in G - L.";
+                                    stepInfo = "J nas one member. Check the number of links in G - L.";
                                     step = SPECIAL_ZERO_JONE_L;
                                  } else if(J.size()==2 && checkIfIsNeighbour(nu, getnr())){
                                     stepInfo = "J nas two members and nr is not a part of nu's neighbourhood. "
-                                               "Check number of verticles in G - L.";
+                                               "Check the number of links in G - L.";
                                     step = SPECIAL_ZERO_JTWO_L;
                                  }else{
                                     stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
@@ -128,7 +132,7 @@ bool Iligra::changeState(){
                     step = DONE;
                     G.connect(1,2);
                 } else if (H.getNodeCount()>3){
-                    addNuToNh(0);
+                    addNuConnectionToG(0);
                     stepInfo = "nu is connected to v1";
                     step = EACH_IN_J;
                 } else {
@@ -139,13 +143,13 @@ bool Iligra::changeState(){
                 return true;
             case SPECIAL_ZERO_JTWO_L:
                 if(H.getNodeCount()==4){
-                    addNuToNh(0);
+                    addNuConnectionToG(0);
                     stepInfo = "nu is connected to v1 (or v2 - isomorphic)";
                     step = EACH_IN_J;
                 } else if (H.getNodeCount()>5){
                     int v = -1;
                     isnxInC() ? v=0:v=1;
-                    addNuToNh(v);
+                    addNuConnectionToG(v);
                     stepInfo = "nu is connected to v"+ QString::number(v);
                     step = EACH_IN_J;
                 } else {
@@ -167,32 +171,215 @@ bool Iligra::changeState(){
                     step = EACH_IN_J;
                 }
                 return true;}
-            case SPECIAL_ONE_JTWO_L:
+            case SPECIAL_ONE_JTWO_L:{
                 if(!checkIfIsNeighbour(getnr(),getns())){
-                    stepInfo = "nr belongs to neighbouthood of nu. Moving on.";
+                    stepInfo = "ns doesn't belong to the neighbouthood of nr. "
+                               "Analyse if ns belongs to C (sum of n1's and n2's neighbourhoods).";
+                    step = SPECIAL_NS_IN_C;
+                } else {
+                    stepInfo = "ns belongs to the neighbouthood of nr. "
+                               "Analyse L.";
+                    step = SPECIAL_NS_L;
+                }
+                return true;}
+           case SPECIAL_NS_IN_C:{
+                highlighted.push_back(getns());
+                if(isnsInC()){
+                    addNuConnectionToG(G.getNodesIndexes()[0]);
+                    stepInfo = "ns is part of C, hence its link will be connected to v1";
+                } else {
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                    stepInfo = "ns is not a part of C, hence its link will be connected to v2";
+                }
+                step = EACH_IN_J;
+                return true;}
+           case SPECIAL_NS_L:{
+                int L = H.getNodeCount();
+                if(L<4){
+                    stepInfo = "ERROR!";
+                    step = DONE;
+                    return false;
+                }else if(L == 5){
+                    addNuConnectionToG(G.getNodesIndexes()[0]);
+                    stepInfo = "nu is connected to v1 (or v2 - isomorphic)";
+                    step = EACH_IN_J;
+                } else {
+                    int v = -1;
+                    isnxInC() ? v=0:v=1;
+                    addNuConnectionToG(G.getNodesIndexes()[v]);
+                    stepInfo = "nu is connected to v"+ QString::number(v);
                     step = EACH_IN_J;
                 }
+                return true;}
+           case SPECIAL_TWO_NS:{
+                if(checkIfIsNeighbour(getnt(), getns())){
+                    stepInfo = "ns is a neighbour od nt. Checking if ns, nt and n1 or n2 are a clique.";
+                    step = SPECIAL_TWO_NS_CLI;
+                } else {
+                    stepInfo = "ns is not a neighbour od nt. Checking the size of J.";
+                    step = SPECIAL_TWO_NS_J;
+                }
+                return true;}
+           case SPECIAL_TWO_NS_J:{
+                if(J.size()==1){
+                    stepInfo = "J has only one node, hence nu is a link of v2";
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                    step = EACH_IN_J;
+                } else if(J.size()==2){
+                    stepInfo = "J has two nodes, check if nr (node in J that is not nu) "
+                               "is a neighbour of nu.";
+                    step = SPECIAL_TWO_NS_J_NU;
+                }
+                return true;}
+           case SPECIAL_TWO_NS_J_NU:{
+                if(!checkIfIsNeighbour(nu,getnr())){
+                    stepInfo = "nr is not a neighbour of nu, hence nu is a link of v2";
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                } else {
+                    stepInfo = "nr is a neighbour of nu, hence no connection is established. "
+                               "Moving on";
+                }
+                step = EACH_IN_J;
+                return true;}
+           case SPECIAL_TWO_NS_CLI:{
+                std::vector<int> cliOne = {highlighted[0], getns(), getnt()};
+                std::vector<int> cliTwo = {highlighted[1], getns(), getnt()};
+                if((isAClique(cliOne)||isAClique(cliTwo))){
+                    stepInfo = "ns, nt and n1 or n2 form a clique, hence nu is a link of v2";
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                    step = EACH_IN_J;
+                } else {
+                    stepInfo = "ns, nt and n1 or n2 do not form a clique. "
+                               "Checking size of J";
+                    step = SPECIAL_TWO_NS_CLI_J;
+                }
+                return true;}
+           case SPECIAL_TWO_NS_CLI_J:{
+                if(J.size()==1){
+                    stepInfo = "Only nu is in J. Checking L - the number of links in G";
+                    step = SPECIAL_TWO_NS_CLI_JONE_L;
+                } else if(J.size()==2){
+                    stepInfo = "Two nodes are in J. Checking in nr (other node in J) is connected to nu";
+                    step = SPECIAL_TWO_NS_CLI_JTWO_NR;
+                }
+                return true;}
+           case SPECIAL_TWO_NS_CLI_JONE_L:{
+                if(H.getNodeCount()<5){
+                    stepInfo = "L is too small - moving on;";
+                    step = EACH_IN_J;
+                } else if(H.getNodeCount()==5){
+                    stepInfo = "L is equal 5, hence nu is a link of v2";
+                    step = EACH_IN_J;
+                    addNuConnectionToG(G.getNodesIndexes()[0]);
+                } else {
+                     stepInfo = "L is bigger than 5, hence checking if nx (a node in H, that is not "
+                                "n1, n2, nu or nr) is not connected to n1, nor n2.";
+                     step = SPECIAL_NX;
+                }
+                return true;}
+           case SPECIAL_NX:{
+                int nx = getnx();
+                if(!(checkIfIsNeighbour(H.getNodesIndexes()[0],nx) &&
+                     checkIfIsNeighbour(H.getNodesIndexes()[1],nx))){
+                    stepInfo = "nx is not connected to neither n1 nor n2, "
+                               "hence nu is connected to v2.";
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                    step = EACH_IN_J;
+                } else {
+                    stepInfo = "nx is connected to either n1 or n2, "
+                               "hence nu's connection cannot be established. Moving on.";
+                }
+                step = EACH_IN_J;
+                return true;}
+           case SPECIAL_TWO_NS_CLI_JTWO_NR:{
+                if(checkIfIsNeighbour(nu, getnr())){
+                    stepInfo = "nr is a naighbour of nu, "
+                               "hence no connectin for nu is established. "
+                               "Moving on.";
+                    step = EACH_IN_J;
+                } else {
+                    stepInfo = "nr is not a neighbour of nu, hence checking L -"
+                               " the number of links in G";
+                    step = SPECIAL_TWO_NS_CLI_JTWO_NR_L;
+                } return true;}
+           case SPECIAL_TWO_NS_CLI_JTWO_NR_L:{
+                if(H.getNodeCount()>6){
+                    stepInfo = "G has less than 6 links - nothing can be establised for nu."
+                               "Moving on.";
+                    step = EACH_IN_J;
+                } else if(H.getNodeCount()==6){
+                    stepInfo = "G has 6 links - nu is a link of v2.";
+                    step = EACH_IN_J;
+                    addNuConnectionToG(G.getNodesIndexes()[1]);
+                } else {
+                    stepInfo = "G has more than 6 links - checking if "
+                               "nx (a node in H, that is not "
+                               "n1, n2, nu or nr) is not connected to n1, nor n2.";
+                    step = SPECIAL_NX;
+                } return true;}
+
+
+
+            }
+    return true;
+}
+
+bool Iligra::isAClique(std::vector<int> potentialClique){
+    int startingPoint = 1;
+    for(int nodeIdx = 0; nodeIdx < potentialClique.size()-1; ++nodeIdx){
+        for(int i = startingPoint; i<potentialClique.size();++i){
+            if(!checkIfIsNeighbour(potentialClique[nodeIdx], potentialClique[i])){
+                return false;
+            }
+        }
+        ++startingPoint;
     }
     return true;
 }
 
 
+void Iligra::addToNh(int v, int n){
+    G.addAdjecentToANode(-10, v);
+    Nh.push_back(n);
+    vlh.push_back(v);
+    for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
+        if(*it == v){
+            Nw.erase(it);
+            break;
+        }
+    }
+    return;
+}
+
+bool Iligra::isnsInC(){
+    int ns = getns();
+    if(checkIfIsNeighbour(0, ns) || checkIfIsNeighbour(1, ns) ){
+        return true;
+    }
+    return false;
+}
 
 bool Iligra::isnxInC(){
-    int nx = Nw[0];
+    int nx = getnx();
     if(checkIfIsNeighbour(0, nx) || checkIfIsNeighbour(1, nx) ){
         return true;
     }
     return false;
 }
 
-void Iligra::addNuToNh(int i){
+void Iligra::addNuConnectionToG(int i){
     G.addAdjecentToANode(-10, G.getNodesIndexes()[i]);
     Nh.push_back(nu);
     vlh.push_back(G.getNodesIndexes()[i]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
         if(*it == nu){
             Nw.erase(it);
+            break;
+        }
+    }
+    for(std::vector<int>::iterator it = J.begin(); it<J.end(); ++it){
+        if(*it == nu){
+            J.erase(it);
             break;
         }
     }
@@ -204,16 +391,32 @@ bool Iligra::checkIfIsNeighbour(int idx, int idxPot){
     return std::find(nbn.begin(), nbn.end(), idxPot) != nbn.end();
 }
 
-int Iligra::getns(){
-    std::vector<int> nbn = H.getSingleAdjecencyList(idx);
+int Iligra::getnt(){
+    std::vector<int> nbn = H.getSingleAdjecencyList(nu);
     std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
     std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
-    int zSize = 0;
-    std::vector<int>::iterator in = nbn.begin();
-    for(; in < nbn.end(); ++in){
+    int foundBefore = 0;
+    for( std::vector<int>::iterator in = nbn.begin(); in < nbn.end(); ++in){
         if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
             std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
-                return zSize;
+            if(!foundBefore){
+                ++foundBefore;
+            }else{
+                return *in;
+            }
+        }
+    }
+    return -1;
+}
+
+int Iligra::getns(){
+    std::vector<int> nbn = H.getSingleAdjecencyList(nu);
+    std::vector<int> nb1 = H.getSingleAdjecencyList(highlighted[0]);
+    std::vector<int> nb2 = H.getSingleAdjecencyList(highlighted[1]);
+    for( std::vector<int>::iterator in = nbn.begin(); in < nbn.end(); ++in){
+        if(!(std::find(nb1.begin(), nb1.end(), *in) != nb1.end() ||
+            std::find(nb2.begin(), nb2.end(), *in) != nb2.end())){
+                return *in;
         }
     }
     return -1;
@@ -225,6 +428,16 @@ int Iligra::getnr(){
             if(J[i] != nu){
                 return J[i];
             }
+        }
+    }
+    return -1;
+}
+
+int Iligra::getnx(){
+    int ns = getns();
+    for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
+        if(*it != ns && *it != nu){
+            return *it;
         }
     }
     return -1;
