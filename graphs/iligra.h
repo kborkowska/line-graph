@@ -18,6 +18,7 @@ public:
     //corresponding to thelinks inGof which one incident node is determined
     std::vector<int> Nb; //The set of the neighbors
     std::vector<int> J;
+    std::vector<int> C;
 
     std::vector<int> vlh;
     std::vector<int> highlighted;
@@ -25,6 +26,7 @@ public:
     QString stepInfo;
 
     int nu;
+    int n;
 
     Iligra();
     bool changeState();
@@ -32,12 +34,14 @@ public:
 
     enum Step {DONE, NONE, LOADED, ARBITRARY_N1, ARBITRARY_N2, ADD_FIRST_NODES,
                CONNECT_N1, FIRST_CONECT_N2, N1_ONLY_NGBRS, ANALYSE_J, ONE_TWO_J,
-               THREE_J, NU, INIT_SPECIAL, EACH_IN_J, SPECIAL, SPECIAL_ZERO_J, SPECIAL_ONE_J,
+               THREE_J, INIT_SPECIAL, EACH_IN_J, SPECIAL, SPECIAL_ZERO_J, SPECIAL_ONE_J,
                SPECIAL_TWO_NS, SPECIAL_ZERO_JONE_L, SPECIAL_ZERO_JTWO_L, SPECIAL_ONE_JONE_L,
                SPECIAL_ONE_JTWO_L, SPECIAL_NS_IN_C, SPECIAL_NS_L,SPECIAL_TWO_NS_CLI,
                SPECIAL_TWO_NS_J, SPECIAL_TWO_NS_J_L, SPECIAL_TWO_NS_J_NU, SPECIAL_TWO_NS_CLI_J,
                SPECIAL_TWO_NS_CLI_JONE_L, SPECIAL_TWO_NS_CLI_JTWO_NR,
-               SPECIAL_TWO_NS_CLI_JTWO_NR_L, SPECIAL_NX};
+               SPECIAL_TWO_NS_CLI_JTWO_NR_L, SPECIAL_NX, CHECK_IF_LINE_J, CHECK_IF_LINE_J_CLI,
+               CHECK_IF_LINE_NB, CHECK_IF_LINE_NB_CLI, WHILE_NH, ADD_V_AND_CONNECT,
+               REMOVE_AND_CLEAR_C};
 
 private:
     Step step;
@@ -63,6 +67,9 @@ private:
     bool isnsInC();
     void addToNh(int v, int n);
     bool isAClique(std::vector<int> potentialClique);
+    void connectAllJToV1();
+    std::vector<int> getNeighboursN1WithoutJ();
+    void connectFromNhToSecondNode();
 };
 
 #endif // ILIGRA_H
