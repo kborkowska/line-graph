@@ -54,6 +54,7 @@ public:
     public:
         Line();
         Line(int node1, int node2);
+        Line(int node1, int node2, int label);
         int node1 = -1, node2 = -1;
         int label1 = -1, label2 = -1;
         QString label_ = "";
@@ -86,9 +87,10 @@ public:
     void colorNodes();
     void fillLines();
     bool containsLine(int node1, int node2);
-    Line* getLine(int node1, int node2);
+    Line* getLine(int node1, int node2, int label = -1);
     int getLineCount() {return lines_.size();}
-    void addLine(int node1, int node2) {lines_.push_back(std::make_unique<Line>(node1, node2));};
+    void addLine(int node1, int node2, int label = -1);
+    void connectHangingLine(int node1, int node2, int label);
     std::vector<std::unique_ptr<Line>> lines_;
     bool alphabeticalIndexing = false;
     QStringList colorList;

@@ -369,6 +369,7 @@ bool Iligra::isnxInC(){
 
 void Iligra::addNuConnectionToG(int i){
     G.addAdjecentToANode(-10, G.getNodesIndexes()[i]);
+    G.addLine(G.getNodesIndexes()[i], -10,  nu);
     Nh.push_back(nu);
     vlh.push_back(G.getNodesIndexes()[i]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
@@ -571,8 +572,7 @@ void Iligra::firstConnectN2(){
     //highlighted = Nw[0]
     //G -v1-v2
     G.addAdjecentToANode(-10, G.getNodesIndexes()[0]);
-    G.addLine(G.getNodesIndexes()[0], -10);
-    G.getLine(G.getNodesIndexes()[0], -10)->setLabel(1, -1);
+    G.addLine(G.getNodesIndexes()[0], -10, 1);
     Nh.push_back(highlighted[1]);
     vlh.push_back(G.getNodesIndexes()[0]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
