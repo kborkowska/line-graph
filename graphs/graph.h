@@ -88,6 +88,7 @@ public:
     bool containsLine(int node1, int node2);
     Line* getLine(int node1, int node2);
     int getLineCount() {return lines_.size();}
+    void addLine(int node1, int node2) {lines_.push_back(std::make_unique<Line>(node1, node2));};
     std::vector<std::unique_ptr<Line>> lines_;
     bool alphabeticalIndexing = false;
     QStringList colorList;
