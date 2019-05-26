@@ -27,6 +27,9 @@ public:
 
     int nu;
     int n;
+    int nn;
+    int vl;
+    int checedkInN;
 
     Iligra();
     bool changeState();
@@ -41,7 +44,7 @@ public:
                SPECIAL_TWO_NS_CLI_JONE_L, SPECIAL_TWO_NS_CLI_JTWO_NR,
                SPECIAL_TWO_NS_CLI_JTWO_NR_L, SPECIAL_NX, CHECK_IF_LINE_J, CHECK_IF_LINE_J_CLI,
                CHECK_IF_LINE_NB, CHECK_IF_LINE_NB_CLI, WHILE_NH, ADD_V_AND_CONNECT,
-               REMOVE_AND_CLEAR_C};
+               REMOVE_AND_CLEAR_C, EACH_NR_IN_NB, IS_NH_EMPTY, NR_IN_NH, NR_IN_NW, CHECK_C_CLI};
 
 private:
     Step step;
@@ -69,7 +72,8 @@ private:
     bool isAClique(std::vector<int> potentialClique);
     void connectAllJToV1();
     std::vector<int> getNeighboursN1WithoutJ();
-    void connectFromNhToSecondNode();
+    void connectFromNhToSecondNode(int Nhidx, int idxNewNode);
+    int findIdxInSet(std::vector<int> & set, int n);
 };
 
 #endif // ILIGRA_H

@@ -349,7 +349,7 @@ bool Iligra::changeState(){
                 } else {
                     stepInfo="There aren't any nodes that are connected to n1 but are not in J. "
                              "For now is seem that H is a line graph. Moving on.";
-                    step WHILE_NH;
+                    step = WHILE_NH;
                 } return true;
            case CHECK_IF_LINE_NB_CLI:
                 if(isAClique(getNeighboursN1WithoutJ())){
@@ -362,26 +362,114 @@ bool Iligra::changeState(){
                 } return true;
            case WHILE_NH:
                 n=Nh[0];
+                vl = vlh[0];
+                checedkInN = 0;
                 stepInfo:"As long as Nh is not empty go back to this step. "
                          "Take an arbitrary node form Nh. Node "+QString::number(n)+" was chosen";
                 highlighted.push_back(n);
                 step = ADD_V_AND_CONNECT;
+                return true;
            case ADD_V_AND_CONNECT:
-                stepInfo:"Create a new node in G and connect it to the node link "
-                            +QString::number(n)+"was connected to.";
-                step = REMOVE_AND_CLEAR_C;
-                connectFromNhToSecondNode();
+                stepInfo="Create a new verticle in G and connect it to the node link "
+                            +QString::number(n)+"was connected to. "
+                             "Remove the node form Nh and set C to epmty set.";
+                G.addNode();
+                connectFromNhToSecondNode(n, G.getNodesIndexes()[G.getNodeCount()-1]);
+                C.clear();
+                step = EACH_NR_IN_NB;
+                return true;
+           case EACH_NR_IN_NB:
+                stepInfo = "If node "+QString::number(n)+" has any neighbours "
+                           "in Nh or Nw take one. ";
+                if(H.getSingleAdjecencyList(n).size()==0){
+                    stepInfo += "No nodes in neighbourhood. Check if Nh is empty.";
+                    step = IS_NH_EMPTY;
+                } else {
+                    for(int i = checedkInN ; i<H.getSingleAdjecencyList(n).size(); ++i){
+                        ++checedkInN;
+                        if(std::find(Nh.begin(), Nh.end(), H.getSingleAdjecencyList(n)[i]) != Nh.end()){
+                            nn = H.getSingleAdjecencyList(n)[i];
+                            stepInfo+="Found neighbour nr of index "+QString::number(nn)+" in Nh. ";
+                            step = NR_IN_NH;
+                            return true;
+                        } else if(std::find(Nw.begin(), Nw.end(), H.getSingleAdjecencyList(n)[i]) != Nw.end()){
+                            nn = H.getSingleAdjecencyList(n)[i];
+                            highlighted.push_back(nn);
+                            stepInfo+="Found neighbour nr of index "+QString::number(nn)+" in Nw. ";
+                            step = NR_IN_NW;
+                            return true;
+                        }
+                    }
+                    stepInfo+="Haven't found right neighbour. Checking if C is a clique.";
+                    step = CHECK_C_CLI;
+                } return true;
+           case NR_IN_NH:
+                if(vlh[findIdxInSet(Nh, nn)] == G.getNodesIndexes()[G.getNodeCount()-1]){
+                    stepInfo = "nr is connected to the same verticle in G n"
+                            +QString::number(n)+" was. Looking for another node in n's neighbourhood.";
+                } else {
+                    stepInfo = "nr is not connected to the same verticle in G n"
+                            +QString::number(n)+". Add nr to C, remove it form Nh, and connect its"
+                         " node to the one nwely created. Looking for next neighbour.";
+                    C.push_back(nn);
+                    connectFromNhToSecondNode(nn, G.getNodesIndexes()[G.getNodeCount()-1]);
+                }
+                step = EACH_NR_IN_NB;
+                return true;
+           case NR_IN_NW:
+                stepInfo = "Add nr to C, Nh, set "+QString::number(nn)+"'s one connected node "
+                           "to the newly created one. Remove nr form Nw. Looking for next neighbour.";
+                C.push_back(nn);
+                addToNh(G.getNodesIndexes()[G.getNodeCount()-1], nn);
+                step = EACH_NR_IN_NB;
+                return true;
+           case CHECK_C_CLI:
+                if(C.size() !=0){
+                    if(isAClique(C)){
+                        stepInfo="C is not empty and but is a clique. Checking if Nh is empty.";
+                    }else{
+                        stepInfo="C is not empty and not a clique. H is not a line graph.";
+                        step = DONE;
+                        return true;
+                    }
+                }else{
+                    stepInfo="C is empty, checking if Nh is empty.";
+                }
+                step = IS_NH_EMPTY;
+                return true;
+           case IS_NH_EMPTY:
+                if(Nh.size()==0){
+                    stepInfo="Nh is empty, finished graph reconstruction";
+                    step = DONE;
+                } else {
+                    stepInfo="Nh is not empty.";
+                    step = WHILE_NH;
+                }
 
+           case DONE:
+                stepInfo = "DONE.";
+                return true;
             }
     return true;
 }
 
-void Iligra::connectFromNhToSecondNode(){
-    G.addNode();
+int Iligra::findIdxInSet(std::vector<int> & set, int n){
+    for(int i =0 ; i<set.size();++i){
+        if(set[i]==n){
+            return i;
+        }
+    }
+    return -1;
+}
 
-    Nh.erase(Nh.begin());
-    vlh.erase(vlh.begin());
-    C.clear();
+void Iligra::connectFromNhToSecondNode(int Nhidx, int idxNewNode){
+
+    std::vector<int>::iterator iNh = Nh.begin()+Nhidx;
+    std::vector<int>::iterator iVlh = vlh.begin()+Nhidx;
+    G.connect(idxNewNode, *iVlh);
+    G.connectHangingLine(*iVlh,idxNewNode,  Nh[Nhidx]);
+    Nh.erase(iNh);
+    vlh.erase(iVlh);
     return;
 }
 
@@ -419,10 +507,11 @@ bool Iligra::isAClique(std::vector<int> potentialClique){
 
 void Iligra::addToNh(int v, int n){
     G.addAdjecentToANode(-10, v);
+    G.addLine(v, -10,  n);
     Nh.push_back(n);
     vlh.push_back(v);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
-        if(*it == v){
+        if(*it == n){
             Nw.erase(it);
             break;
         }
@@ -447,7 +536,7 @@ bool Iligra::isnxInC(){
 }
 
 void Iligra::addNuConnectionToG(int i){
-    G.addAdjecentToANode(-10, G.getNodesIndexes()[i]);
+    //G.addAdjecentToANode(-10, G.getNodesIndexes()[i]);
     G.addLine(G.getNodesIndexes()[i], -10,  nu);
     Nh.push_back(nu);
     vlh.push_back(G.getNodesIndexes()[i]);
@@ -650,9 +739,9 @@ void Iligra::firstConnectN2(){
     //vlh v1
     //highlighted = Nw[0]
     //G -v1-v2
-    G.addAdjecentToANode(-10, G.getNodesIndexes()[0]);
+    //G.addAdjecentToANode(-10, G.getNodesIndexes()[0]);
     G.addLine(G.getNodesIndexes()[0], -10, 1);
-    G.getLine(G.getNodesIndexes()[0], -10)->setLabel(1, -1);
+    //G.getLine(G.getNodesIndexes()[0], -10)->setLabel(1, -1);
     Nh.push_back(H.getNodesIndexes()[1]);
     vlh.push_back(G.getNodesIndexes()[0]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){
