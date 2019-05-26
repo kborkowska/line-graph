@@ -13,7 +13,7 @@
 #include "math.h"
 
 #define MAX_NODES 20
-#define K_CONSTANT 500
+#define K_CONSTANT 550
 #define C_CONSTANT 0.009
 #define MAX_X 400
 #define MAX_Y 300

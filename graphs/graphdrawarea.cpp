@@ -32,10 +32,14 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
 
             if(line->node1 >= 0 && line->node2 == -10) {
                 p1 = graph_->getNodePosition(line->node1);
-                p2 = QPoint(p1.x() + 90, p1.y() - 40);
+                QRandomGenerator gen(line->node1 + line->label1 + line->label2 + 1);
+                int dir = gen.bounded(0, 2*3.14);
+                p2 = QPoint(p1.x() + 80*sin(dir), p1.y() +80*cos(dir));
             } else if(line->node2 >= 0 && line->node1 == -10) {
                 p1 = graph_->getNodePosition(line->node2);
-                p2 = QPoint(p1.x() + 90, p1.y() - 40);
+                QRandomGenerator gen(line->node2 + line->label1 + line->label2 + 1);
+                int dir = gen.bounded(0, 2*3.14);
+                p2 = QPoint(p1.x() + 80*sin(dir), p1.y() +80*cos(dir));
             } else {
                 p1 = graph_->getNodePosition(line->node1);
                 p2 = graph_->getNodePosition(line->node2);

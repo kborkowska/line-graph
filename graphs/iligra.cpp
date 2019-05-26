@@ -362,9 +362,9 @@ bool Iligra::changeState(){
                 } return true;
            case WHILE_NH:
                 n=Nh[0];
-                vl = vlh[0];
+		vl = vlh[0];
                 checedkInN = 0;
-                stepInfo:"As long as Nh is not empty go back to this step. "
+                stepInfo="As long as Nh is not empty go back to this step. "
                          "Take an arbitrary node form Nh. Node "+QString::number(n)+" was chosen";
                 highlighted.push_back(n);
                 step = ADD_V_AND_CONNECT;
@@ -721,6 +721,7 @@ void Iligra::n1OnlyNeighbours(){
         if(it2 == nb2.end()){
             Nh.push_back(*it);
             highlighted.push_back(*it);
+            G.addLine(G.getNodesIndexes()[1], -10, *it);
             for(std::vector<int>::iterator itw = Nw.begin(); itw<Nw.end(); ++itw){
                 if(*itw == *it){
                     Nw.erase(itw);
@@ -741,7 +742,6 @@ void Iligra::firstConnectN2(){
     //G -v1-v2
     //G.addAdjecentToANode(-10, G.getNodesIndexes()[0]);
     G.addLine(G.getNodesIndexes()[0], -10, 1);
-    //G.getLine(G.getNodesIndexes()[0], -10)->setLabel(1, -1);
     Nh.push_back(H.getNodesIndexes()[1]);
     vlh.push_back(G.getNodesIndexes()[0]);
     for(std::vector<int>::iterator it = Nw.begin(); it<Nw.end(); ++it){

@@ -8,7 +8,6 @@ Graph::Graph(){
               << "orange"
               << "orangered"
               << "orchid"
-              << "palegoldenrod"
               << "palegreen"
               << "paleturquoise"
               << "palevioletred"
@@ -281,8 +280,8 @@ QPoint Graph::getNodePosition(int idx) {
 void Graph::repositionNodes() {
     for(int nodeIterator = 0; nodeIterator < getNodeCount(); nodeIterator++) {
         QRandomGenerator gen(nodeIterator + 1);
-        int x = gen.bounded(0, MAX_X);
-        int y = gen.bounded(0, MAX_Y);
+        int x = rand()%MAX_X;
+        int y = rand()%MAX_Y;
         setNodePosition(nodeIterator, QPoint(x, y));
     }
 
@@ -298,8 +297,8 @@ void Graph::repositionNodes() {
                 if ((nodePosition == destPosition) && nodeIterator != destIterator) {
                     std::cout << nodeIterator << " " << destIterator<< std::endl;
                     QRandomGenerator gen(nodeIterator + 1);
-                    int x = gen.bounded(0, MAX_X);
-                    int y = gen.bounded(0, MAX_Y);
+                    int x = rand()%MAX_X;
+                    int y = rand()%MAX_Y;
                     setNodePosition(nodeIterator, QPoint(x, y));
                     nodePosition = getNodePosition(nodeIterator);
                 }
