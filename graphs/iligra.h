@@ -72,7 +72,7 @@ private:
     bool isAClique(std::vector<int> potentialClique);
     void connectAllJToV1();
     std::vector<int> getNeighboursN1WithoutJ();
-    void connectFromNhToSecondNode(int Nhidx, int idxNewNode);
+    void connectFromNhToSecondNode(int n, int idxNewNode);
     int findIdxInSet(std::vector<int> & set, int n);
 };
 

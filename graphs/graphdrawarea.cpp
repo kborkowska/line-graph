@@ -49,11 +49,13 @@ void GraphDrawArea::paintEvent(QPaintEvent *event) {
             QLine qline(p1, p2);
             QPoint position = p1 + QPoint(qline.dx()/2, qline.dy()/2);
             if (line->label1 != -1){
-                painter.setPen(QColor(graph_->colorList.at(line->label1)));
+                QPen pen(QColor(graph_->colorList.at(line->label1)), 10);
+                painter.setPen(pen);
                 painter.drawText(position.x() - 5, position.y(), QString::number(line->label1));
             }
             if (line->label2 != -1) {
-                painter.setPen(QColor(graph_->colorList.at(line->label2)));
+                QPen pen(QColor(graph_->colorList.at(line->label1)), 10);
+                painter.setPen(pen);
                 painter.drawText(position.x() + 5, position.y(), QString::number(line->label2));
             }
         }

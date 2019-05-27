@@ -9,10 +9,7 @@ Graph::Graph(){
               << "orangered"
               << "orchid"
               << "palegreen"
-              << "paleturquoise"
               << "palevioletred"
-              << "papayawhip"
-              << "peachpuff"
               << "peru"
               << "pink"
               << "plum"
@@ -190,7 +187,7 @@ bool Graph::removeAdjecentFromANode(int adjIdx, int nodeIdx){
 bool Graph::connect(int adjIdx, int nodeIdx){
     bool res1 = addAdjecentToANode(adjIdx, nodeIdx);
     bool res2 = addAdjecentToANode(nodeIdx, adjIdx);
-    if(!containsLine(adjIdx, nodeIdx)) {
+    if(!containsLine(adjIdx, nodeIdx) && !containsLine(nodeIdx, -10) && !containsLine(adjIdx, -10)) {
         lines_.push_back(std::make_unique<Graph::Line>(adjIdx, nodeIdx, -1));
     }
     return res1 && res2;
@@ -390,8 +387,47 @@ void Graph::addLine(int node1, int node2, int label) {
 }
 
 void Graph::connectHangingLine(int node1, int node2, int label) {
-    Line *line = getLine(node1, node2, label);
-    if ((node1 >=0 && node2 == -10)){
+    Line *line = getLine(node1, -10, label);
+    if(line == nullptr) {
+        line = getLine(node2, -10), label;
+        if (line != nullptr) {
+            if (line->node1 == node1) {
+                line->node2 = node2;
+                return;
+            }
+            if (line->node1 == node2) {
+                line->node2 = node1;
+                return;
+            }
+            if (line->node2 == node1) {
+                line->node1 = node2;
+                return;
+            }
+            if(line->node2 == node2) {
+                line->node1 = node1;
+                return;
+            }
+        }
+    } else {
+        if (line->node1 == node1) {
+            line->node2 = node2;
+            return;
+        }
+        if (line->node1 == node2) {
+            line->node2 = node1;
+            return;
+        }
+        if (line->node2 == node1) {
+            line->node1 = node2;
+            return;
+        }
+        if(line->node2 == node2) {
+            line->node1 = node1;
+            return;
+        }
+    }
+}
+    /*if ((node1 >=0 && node2 == -10)){
         if (line != nullptr) {
             line->node2 = node2;
             return;
@@ -401,6 +437,4 @@ void Graph::connectHangingLine(int node1, int node2, int label) {
         if (line != nullptr) {
             line->node1 = node1;
             return;
-        }
-    }
-}
+        }*/
