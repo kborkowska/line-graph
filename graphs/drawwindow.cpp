@@ -41,7 +41,7 @@ void DrawWindow::updateNodeGraph(){
 }
 
 void DrawWindow::setCurrentNode(int currentNode) {
-    ui->currentNodeLabel->setText(QString::number(currentNode));
+
 }
 
 void DrawWindow::on_nextStepButton_clicked()
@@ -71,23 +71,22 @@ void DrawWindow::on_loadFromFileButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,QString(),QString(), QString(),nullptr,
                                                     QFileDialog::DontUseNativeDialog);
-    std::cout << fileName.toStdString() << std::endl;
+    delete (iligra_);
+    iligra_ = new Iligra();
     iligra_->loadFromFile(fileName);
     setLineGraph(&(iligra_->H));
     setNodeGraph(&(iligra_->G));
     lineGraph_->repositionNodes();
     lineGraph_->fillLines();
-    std::cout<<92834283749847<<std::endl;
     updateDrawWindow();
-    std::cout<<9<<std::endl;
     this->update();
-    std::cout<<47<<std::endl;
 }
 
 void DrawWindow::updateDrawWindow() {
     ui->NhList->clear();
     ui->NwList->clear();
     ui->JList->clear();
+    ui->CList->clear();
 
     for(auto it = iligra_->Nh.begin(); it != iligra_->Nh.end(); it++) {
         ui->NhList->addItem(QString::number(*it));
@@ -98,6 +97,9 @@ void DrawWindow::updateDrawWindow() {
     }
     for(auto it = iligra_->J.begin(); it != iligra_->J.end(); it++) {
         ui->JList->addItem(QString::number(*it));
+    }
+    for(auto it = iligra_->C.begin(); it != iligra_->C.end(); it++) {
+        ui->CList->addItem(QString::number(*it));
     }
 
     lineGraph_->repositionNodes();
